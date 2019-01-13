@@ -33,9 +33,6 @@
     <ClCompile Include="InterfaceObject.cpp">
       <Filter>Source Files\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="olcConsoleGameEngineGLOOP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>Source Files\Interface</Filter>
     </ClCompile>
@@ -43,6 +40,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransportNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="olcConsoleGameEngineGLOOP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,9 +62,6 @@
     <ClInclude Include="Vector2.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="olcConsoleGameEngineGLOOP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>Header Files\Interface</Filter>
     </ClInclude>
@@ -69,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransportNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="olcConsoleGameEngineGLOOP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

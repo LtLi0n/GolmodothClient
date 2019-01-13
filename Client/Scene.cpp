@@ -49,7 +49,7 @@ void Scene::Update(class Player& player)
 	int render_height = _engine->ScreenHeight() > _height ? _height : _engine->ScreenHeight();
 	int render_width = _engine->ScreenWidth() > _width ? _width : _engine->ScreenWidth();
 
-	//render
+	//render tiles
 	for (int y = 0; y < render_height; y++)
 	{
 		for (int x = 0; x < render_width; x++)
@@ -59,6 +59,7 @@ void Scene::Update(class Player& player)
 			
 			TileType type1 = t.GetType();
 
+			//horizontal connections
 			if (x < render_width - 1)
 			{
 				wchar_t connecting_char;
@@ -83,6 +84,7 @@ void Scene::Update(class Player& player)
 				}
 			}
 
+			//vertical connections
 			if (y < render_height - 1)
 			{
 				wstring connecting_string;
@@ -112,5 +114,14 @@ void Scene::Update(class Player& player)
 				}
 			}
 		}
+	}
+
+	//render transport nodes
+	for (pair<const int, TransportNode*>& pair : transport)
+	{
+		int x = pair.first % _width;
+		int y = pair.first / _height;
+
+		_engine->DrawString(x * 3 + x, y * 2, pair.second->GetDisplay(), FG_RED);
 	}
 }

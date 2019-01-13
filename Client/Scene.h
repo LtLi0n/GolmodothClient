@@ -2,6 +2,11 @@
 
 #include "Player.h"
 #include "Tile.h"
+#include "TransportNode.h"
+
+#include <map>
+
+class TransportNode;
 
 class Scene
 {
@@ -17,6 +22,8 @@ public:
 	void SetTile(const int& x, const int& y, const Tile& tile);
 
 	void Update(class Player& player);
+
+	map<const int, TransportNode*> transport;
 
 private:
 	olcConsoleGameEngineGLOOP* _engine;

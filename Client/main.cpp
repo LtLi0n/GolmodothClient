@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <vector>
 #include <string>
@@ -17,14 +17,24 @@ public:
 	Player* player;
 	Button* button;
 
+	Scene* city;
+	Scene* outdoors;
+
 	Game()
+	{
+		
+	}
+
+protected:
+
+	virtual bool OnUserCreate()
 	{
 		player = new Player(*this);
 
 		button = new Button(*this, 10, 2);
 		button->position = { 5, 5 };
 
-		int* tiles = new int[25 * 25]
+		int* city_tiles = new int[25 * 25]
 		{
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -52,20 +62,35 @@ public:
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 		};
+		city = new Scene(*this, 25, 25, city_tiles);
 
-		player->scene = new Scene(*this, 25, 25, tiles);
-	}
+		int* outdoor_tiles = new int[11, 11]
+		{
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+		};
+		outdoors = new Scene(*this, 10, 10, outdoor_tiles);
 
-protected:
+		city->transport[12] = new TransportNode(*city, *outdoors, Vector3(5, 9, 0), TRANSPORT_NORTH);
+		outdoors->transport[95] = new TransportNode(*outdoors, *city, Vector3(12, 0, 0), TRANSPORT_SOUTH);
 
-	virtual bool OnUserCreate()
-	{
+		player->scene = city;
+
 		return true;
 	}
 
 	virtual bool OnUserUpdate(float fElapsedTime)
 	{
-		m_sAppName = L"X: "s + to_wstring(GetMouseX()) + L" Y: "s + to_wstring(GetMouseY());
+		m_sAppName = L"X: "s + to_wstring(player->position.x) + L" Y: "s + to_wstring(player->position.y);
 
 		Fill(0, 0, m_nScreenWidth, m_nScreenHeight, U' ');
 
@@ -80,8 +105,6 @@ protected:
 		return true;
 	}
 };
-
-//git test
 
 int main()
 {
