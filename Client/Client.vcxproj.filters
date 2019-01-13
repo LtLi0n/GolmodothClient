@@ -45,7 +45,7 @@
     <ClCompile Include="TransportNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="olcConsoleGameEngineGLOOP.cpp">
+    <ClCompile Include="olcConsoleGameEngineOOP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,7 +74,10 @@
     <ClInclude Include="TransportNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="olcConsoleGameEngineGLOOP.h">
+    <ClInclude Include="olcConsoleGameEngineOOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

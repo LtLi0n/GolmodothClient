@@ -118,7 +118,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="olcConsoleGameEngineGLOOP.cpp" />
+    <ClCompile Include="olcConsoleGameEngineOOP.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Tile.cpp" />
@@ -127,7 +127,8 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="InterfaceObject.h" />
-    <ClInclude Include="olcConsoleGameEngineGLOOP.h" />
+    <ClInclude Include="olcConsoleGameEngineOOP.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TransportNode.h" />

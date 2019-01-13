@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(olcConsoleGameEngineGLOOP& engine)
+Player::Player(olcConsoleGameEngineOOP& engine)
 {
 	_engine = &engine;
 }

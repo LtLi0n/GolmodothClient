@@ -1,22 +1,22 @@
 #pragma once
 
-#include "olcConsoleGameEngineGLOOP.h"
+#include "olcConsoleGameEngineOOP.h"
 #include "Vector2.h"
 #include <functional>
 
 class InterfaceObject
 {
 public:
-	InterfaceObject(olcConsoleGameEngineGLOOP& engine, const int& width, const int& height);
+	InterfaceObject(olcConsoleGameEngineOOP& engine, const int& width, const int& height);
 
 	wchar_t* texture;
 	Vector2 position;
 	bool MouseOver() const;
 	void Update();
-	function<void()> OnClick;
+	std::function<void()> OnClick;
 
 protected:
-	olcConsoleGameEngineGLOOP* _engine;
+	olcConsoleGameEngineOOP* _engine;
 	virtual void OnUpdate();
 
 private:

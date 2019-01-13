@@ -6,12 +6,12 @@
 #include <stdio.h>
 #include <Windows.h>
 
-#include "olcConsoleGameEngineGLOOP.h"
+#include "olcConsoleGameEngineOOP.h"
 #include "Player.h"
 #include "Button.h"
 #include "Scene.h"
 
-class Game : public olcConsoleGameEngineGLOOP
+class Game : public olcConsoleGameEngineOOP
 {
 public:
 	Player* player;
@@ -22,19 +22,12 @@ public:
 
 	Game()
 	{
-		
-	}
-
-protected:
-
-	virtual bool OnUserCreate()
-	{
 		player = new Player(*this);
 
 		button = new Button(*this, 10, 2);
 		button->position = { 5, 5 };
 
-		int* city_tiles = new int[25 * 25]
+		int city_tiles[25 * 25] = 
 		{
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -64,7 +57,7 @@ protected:
 		};
 		city = new Scene(*this, 25, 25, city_tiles);
 
-		int* outdoor_tiles = new int[11, 11]
+		int outdoor_tiles[11*11] = 
 		{
 			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 			2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -84,7 +77,12 @@ protected:
 		outdoors->transport[95] = new TransportNode(*outdoors, *city, Vector3(12, 0, 0), TRANSPORT_SOUTH);
 
 		player->scene = city;
+	}
 
+protected:
+
+	virtual bool OnUserCreate()
+	{
 		return true;
 	}
 
@@ -92,7 +90,7 @@ protected:
 	{
 		m_sAppName = L"X: "s + to_wstring(player->position.x) + L" Y: "s + to_wstring(player->position.y);
 
-		Fill(0, 0, m_nScreenWidth, m_nScreenHeight, U' ');
+		Fill(0, 0, ScreenWidth(), ScreenHeight(), U' ');
 
 		player->Update();
 
@@ -109,6 +107,6 @@ protected:
 int main()
 {
 	Game game;
-	game.ConstructConsole(120, 60, 8, 16);
+	game.ConstructConsole(140, 50, 8, 16);
 	game.Start();
 }

@@ -11,8 +11,8 @@ class TransportNode;
 class Scene
 {
 public:
-	Scene(olcConsoleGameEngineGLOOP& engine, const int& width, const int& height);
-	Scene(olcConsoleGameEngineGLOOP& engine, const int& width, const int& height, int tileTypeArr[]);
+	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height);
+	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, int tileTypeArr[]);
 	~Scene();
 
 	int GetWidth() const { return _width; }
@@ -26,7 +26,7 @@ public:
 	map<const int, TransportNode*> transport;
 
 private:
-	olcConsoleGameEngineGLOOP* _engine;
+	olcConsoleGameEngineOOP* _engine;
 	Tile* _tiles;
 
 	int _width;

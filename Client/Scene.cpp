@@ -1,6 +1,6 @@
 ﻿#include "Scene.h"
 
-Scene::Scene(olcConsoleGameEngineGLOOP& engine, const int& width, const int& height)
+Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height)
 {
 	_engine = &engine;
 	_width = width;
@@ -13,7 +13,7 @@ Scene::Scene(olcConsoleGameEngineGLOOP& engine, const int& width, const int& hei
 	for (int y = 0; y < _height; y++) _tiles[y * _width + _width - 1] = Tile(TILE_PATH);
 }
 
-Scene::Scene(olcConsoleGameEngineGLOOP& engine, const int& width, const int& height, int tileTypeArr[])
+Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, int tileTypeArr[])
 {
 	_engine = &engine;
 	_width = width;

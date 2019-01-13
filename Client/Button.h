@@ -5,7 +5,7 @@
 class Button : public InterfaceObject
 {
 public:
-	Button(olcConsoleGameEngineGLOOP& engine, const int& widht, const int& height);
+	Button(olcConsoleGameEngineOOP& engine, const int& widht, const int& height);
 
 protected:
 	void OnUpdate() override;
