@@ -1,7 +1,8 @@
 #pragma once
-#pragma comment(lib, "ws2_32.lib")
 
 #include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+
 #include <string>
 #include <map>
 #include <thread>

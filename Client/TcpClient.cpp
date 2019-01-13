@@ -1,5 +1,7 @@
 #include "TcpClient.h"
 #include <chrono>
+#include <iostream>
+
 
 TcpClient::TcpClient(const char* address, const unsigned short& port)
 {
@@ -11,8 +13,8 @@ TcpClient::TcpClient(const char* address, const unsigned short& port)
 
 TcpClient::~TcpClient()
 {
-	delete[] _address;
-	delete _listeningThread;
+	delete _address;
+	if(_listeningThread != NULL) delete _listeningThread;	
 }
 
 int TcpClient::Start()
@@ -21,26 +23,27 @@ int TcpClient::Start()
 	WSAData data;
 	WORD ver = MAKEWORD(2, 2);
 	int wsResult = WSAStartup(ver, &data);
-	if (wsResult != 0) return wsResult;
+	if (wsResult != 0) return -1;
 
 	_socket = socket(AF_INET, SOCK_STREAM, NULL);
 	if (_socket == INVALID_SOCKET)
 	{
 		WSACleanup();
-		return WSAGetLastError();
+		return -1;
 	}
 
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
-	hint.sin_port = _port;
+	hint.sin_port = htons(_port);
 	inet_pton(AF_INET, _address, &hint.sin_addr);
 
 	int connResult = connect(_socket, (sockaddr*)&hint, sizeof(hint));
 	if (connResult == SOCKET_ERROR)
 	{
+		std::cerr << WSAGetLastError() << std::endl;
 		closesocket(_socket);
 		WSACleanup();
-		return connResult;
+		return -1;
 	}
 
 	_listening = true;

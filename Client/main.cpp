@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿#include "TcpClient.h" //redefition madness, need to move up
+#include <iostream>
 #include <thread>
 #include <vector>
 #include <string>
@@ -106,8 +107,13 @@ protected:
 
 int main()
 {
-	Game game;
+	TcpClient tcp("127.0.0.1", 5000);
+	tcp.Start();
 
-	game.ConstructConsole(110, 50, 8, 16);
-	game.Start();
+	system("pause");
+
+	//Game game;
+
+	//game.ConstructConsole(110, 50, 8, 16);
+	//game.Start();
 }
