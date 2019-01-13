@@ -98,7 +98,7 @@ protected:
 			player->position.x * 4,
 			player->position.y * 2,
 			L"[@]",
-			FG_GREEN);
+			FG_RED);
 
 		return true;
 	}
@@ -107,6 +107,7 @@ protected:
 int main()
 {
 	Game game;
-	game.ConstructConsole(140, 50, 8, 16);
+
+	game.ConstructConsole(110, 50, 8, 16);
 	game.Start();
 }

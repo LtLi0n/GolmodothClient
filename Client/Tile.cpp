@@ -16,7 +16,7 @@ Tile::Tile(const TileType& type)
 
 	case TILE_NULL: _color = FG_BLACK; break;
 	case TILE_PATH: _color = FG_GREY; break;
-	case TILE_GRASS: _color = FG_GREEN; break;
+	case TILE_GRASS: _color = FG_DARK_GREEN; break;
 	case TILE_WATER: _color = FG_CYAN; break;
 	default: _color = FG_BLACK; break;
 

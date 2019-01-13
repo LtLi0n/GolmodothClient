@@ -9,107 +9,111 @@ void Player::Update()
 {
 	bool isOnTransport = scene->transport.count(position.y * scene->GetWidth() + position.x) == 1;
 
-	//NORTH
-	if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
+	//input code
+	if (_engine->IsFocused())
 	{
-		bool skip = false;
-
-		//change scenes
-		if (isOnTransport)
+		//NORTH
+		if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
 		{
-			TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-			if (tn->GetDirection() == TRANSPORT_NORTH)
+			bool skip = false;
+
+			//change scenes
+			if (isOnTransport)
 			{
-				scene = tn->GetTarget();
-				position = tn->GetTargetLocation();
-				skip = true;
+				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
+				if (tn->GetDirection() == TRANSPORT_NORTH)
+				{
+					scene = tn->GetTarget();
+					position = tn->GetTargetLocation();
+					skip = true;
+				}
+			}
+
+			//move north
+			if (!skip && position.y > 0)
+			{
+				if (scene->GetTile(position.x, position.y - 1).Walkable())
+				{
+					position.y--;
+				}
 			}
 		}
-
-		//move north
-		if (!skip && position.y > 0)
+		//EAST
+		else if (_engine->GetKey(VK_RIGHT).bPressed || _engine->GetKey(0x44).bPressed)
 		{
-			if (scene->GetTile(position.x, position.y - 1).Walkable())
+			bool skip = false;
+
+			//change scenes
+			if (isOnTransport)
 			{
-				position.y--;
+				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
+				if (tn->GetDirection() == TRANSPORT_EAST)
+				{
+					scene = tn->GetTarget();
+					position = tn->GetTargetLocation();
+					skip = true;
+				}
+			}
+
+			//move east
+			if (!skip && scene->GetWidth() - 1 > position.x)
+			{
+				if (scene->GetTile(position.x + 1, position.y).Walkable())
+				{
+					position.x++;
+				}
 			}
 		}
-	}
-	//EAST
-	else if (_engine->GetKey(VK_RIGHT).bPressed || _engine->GetKey(0x44).bPressed)
-	{
-		bool skip = false;
-
-		//change scenes
-		if (isOnTransport)
+		//SOUTH
+		else if (_engine->GetKey(VK_DOWN).bPressed || _engine->GetKey(0x53).bPressed)
 		{
-			TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-			if (tn->GetDirection() == TRANSPORT_EAST)
+			bool skip = false;
+
+			//change scenes
+			if (isOnTransport)
 			{
-				scene = tn->GetTarget();
-				position = tn->GetTargetLocation();
-				skip = true;
+				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
+				if (tn->GetDirection() == TRANSPORT_SOUTH)
+				{
+					scene = tn->GetTarget();
+					position = tn->GetTargetLocation();
+					skip = true;
+				}
+			}
+
+			//move south
+			if (!skip && scene->GetHeight() - 1 > position.y)
+			{
+				if (scene->GetTile(position.x, position.y + 1).Walkable())
+				{
+					position.y++;
+				}
 			}
 		}
-
-		//move east
-		if (!skip && scene->GetWidth() - 1 > position.x)
+		//WEST
+		else if ((_engine->GetKey(VK_LEFT).bPressed || _engine->GetKey(0x41).bPressed))
 		{
-			if (scene->GetTile(position.x + 1, position.y).Walkable())
+			bool skip = false;
+
+			//change scenes
+			if (isOnTransport)
 			{
-				position.x++;
+				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
+				if (tn->GetDirection() == TRANSPORT_WEST)
+				{
+					scene = tn->GetTarget();
+					position = tn->GetTargetLocation();
+					skip = true;
+				}
 			}
-		}
-	}
-	//SOUTH
-	else if (_engine->GetKey(VK_DOWN).bPressed || _engine->GetKey(0x53).bPressed)
-	{
-		bool skip = false;
 
-		//change scenes
-		if (isOnTransport)
-		{
-			TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-			if (tn->GetDirection() == TRANSPORT_SOUTH)
+			//move west
+			if (!skip && position.x > 0)
 			{
-				scene = tn->GetTarget();
-				position = tn->GetTargetLocation();
-				skip = true;
-			}
-		}
-
-		//move south
-		if (!skip && scene->GetHeight() - 1 > position.y)
-		{
-			if (scene->GetTile(position.x, position.y + 1).Walkable())
-			{
-				position.y++;
-			}
-		}
-	}
-	//WEST
-	else if ((_engine->GetKey(VK_LEFT).bPressed || _engine->GetKey(0x41).bPressed))
-	{
-		bool skip = false;
-
-		//change scenes
-		if (isOnTransport)
-		{
-			TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-			if (tn->GetDirection() == TRANSPORT_WEST)
-			{
-				scene = tn->GetTarget();
-				position = tn->GetTargetLocation();
-				skip = true;
-			}
-		}
-
-		//move west
-		if (!skip && position.x > 0)
-		{
-			if (scene->GetTile(position.x - 1, position.y).Walkable())
-			{
-				position.x--;
+				if (scene->GetTile(position.x - 1, position.y).Walkable())
+				{
+					position.x--;
+				}
 			}
 		}
 	}
