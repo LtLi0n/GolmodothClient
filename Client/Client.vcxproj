@@ -119,8 +119,10 @@
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="olcConsoleGameEngineOOP.cpp" />
+    <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TcpClient.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TransportNode.cpp" />
   </ItemGroup>
@@ -128,8 +130,10 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="olcConsoleGameEngineOOP.h" />
+    <ClInclude Include="Packet.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="TcpClient.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TransportNode.h" />
     <ClInclude Include="Utils.h" />
