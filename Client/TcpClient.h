@@ -19,9 +19,11 @@ public:
 
 	int Start();
 	int Send(const Packet& packet);
+	Packet WaitHeader(const char* header) const;
+	Packet GetByHeader(const char* header) const;
 
 private:
-	const char* _address;
+    const char* _address;
 	unsigned short _port;
 	SOCKET _socket;
 	std::thread* _listeningThread;

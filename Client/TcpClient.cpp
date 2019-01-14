@@ -1,6 +1,7 @@
 #include "TcpClient.h"
 #include <chrono>
 #include <iostream>
+#include <string>
 
 
 TcpClient::TcpClient(const char* address, const unsigned short& port)
@@ -54,26 +55,75 @@ int TcpClient::Start()
 
 int TcpClient::Send(const Packet& packet)
 {
-	std::vector<unsigned char> data = packet.GenerateBuffer();
-	return send(_socket, (char*)data.data(), data.size(), NULL);
+	return send(_socket, packet.GenerateBuffer(), 2040, NULL);
+}
+
+Packet TcpClient::WaitHeader(const char* header) const
+{
+	while (true)
+	{
+		for (auto const& x : receivedPackets)
+		{
+			std::string headerStr = "";
+			bool header_found = false;
+
+			for (int i = 0; i < 2039; i++)
+			{
+				if (x.second.content[i] == '\0') break;
+				if (x.second.content[i] == '\n')
+				{
+					header_found = true;
+					break;
+				}
+				headerStr += x.second.content[i];
+			}
+
+			if (strcmp(headerStr.c_str(), header) == 0) return x.second;
+		}
+	}
+}
+
+Packet TcpClient::GetByHeader(const char* header) const
+{
+	for (auto const& x : receivedPackets)
+	{
+		const char* content = x.second.content;
+		std::string headerStr = "";
+		bool header_found = false;
+
+		for (int i = 0; i < 2039; i++)
+		{
+			if (content[i] == 0) break;
+			if (content[i] == '\n')
+			{
+				header_found = true;
+				break;
+			}
+			headerStr += content[i];
+		}
+
+		if (strcmp(headerStr.c_str(), header) == 0) return x.second;
+	}
 }
 
 void TcpClient::Listen()
 {
 	while (_listening)
 	{
-		unsigned char* data = new unsigned char[4096];
-		ZeroMemory(data, 4096);
+		char* data = new char[2048];
+		ZeroMemory(data, 2048);
 
-		unsigned char* content = new unsigned char[4087];
-		ZeroMemory(content, 4087);
+		char* content = new char[2039];
+		ZeroMemory(content, 2039);
 
-		recv(_socket, (char*)data, 4096, NULL);
+		recv(_socket, (char*)data, 2048, NULL);
 
 		unsigned int packet_id = *((unsigned int*)data);
 		PacketType packet_type = (PacketType)data[4];
-		for (int i = 0; i < 4087; i++) content[i] = data[i + 5];
-		unsigned int packet_hintId = *((unsigned int*)data[4092]);
+		for (int i = 0; i < 2039; i++) content[i] = data[i + 5];
+
+		//Offsetting the adress by 2044 bytes. At this point "I'm the smartest programmer that has ever lived."
+		unsigned int packet_hintId = *(unsigned int*)(data + 2044);
 
 		if (packet_type != PACKET_NULL)
 		{

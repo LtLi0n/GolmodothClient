@@ -1,22 +1,24 @@
 #pragma once
 
-#include <vector>
-
 enum PacketType { PACKET_NULL, PACKET_SEND, PACKET_REQUEST };
 
 class Packet
 {
 public:
+	Packet(const PacketType& type);
 	Packet(const PacketType& type, const unsigned int& id);
 	Packet(const PacketType& type, const unsigned int& id, const unsigned int& hintId);
 	Packet() = default;
 
-	unsigned char* content; //4087
-	std::vector<unsigned char> GenerateBuffer() const;
+	const char* content; //2039
+	const char* GenerateBuffer() const;
+	PacketType GetType() const;
+	unsigned int GetID() const;
+	unsigned int GetHintID() const;
 
 private:
-	unsigned int _id;
 	PacketType _type;
-	int _hintId; //if data that is bigger than 1 packet
+	unsigned int _id;
+	int _hintId; //next packet id to wait for a complete content, if the sent data is bigger than 2039 bytes.
 };
 

@@ -1,4 +1,12 @@
 #include "Packet.h"
+#include <cstring>
+
+Packet::Packet(const PacketType& type)
+{
+	_id = 0;
+	_type = type;
+	_hintId = 0;
+}
 
 Packet::Packet(const PacketType& type, const unsigned int& id)
 {
@@ -14,22 +22,22 @@ Packet::Packet(const PacketType& type, const unsigned int& id, const unsigned in
 	_hintId = hintId;
 }
 
-std::vector<unsigned char> Packet::GenerateBuffer() const
-{
-	std::vector<unsigned char> buffer = std::vector<unsigned char>(4096);
+const char* Packet::GenerateBuffer() const
+{	
+	char* buffer = new char[2040];
 	
-	//id
-	for (int i = 0; i < 4; i++) buffer[3 - i] = (_id >> (i * 8));
-
 	//type
-	buffer[4] = (unsigned char)_type;
+	buffer[0] = (char)_type;
 
-	//data
-	for (int i = 0; i < 4087; i++) buffer[i + 5] = content[i];
+	//0 everything out
+	for (int i = 0; i < 2039; i++)buffer[i + 1] = 0;
 
-	//hint id
-	for (int i = 4092; i < 4096; i++) buffer[3 - (i - 4092)] = (_hintId >> ((i - 4092) * 8));
+	//set data
+	for (int i = 0; i < strlen(content); i++) buffer[i + 1] = content[i];
 
-	return buffer;
+	return (const char*)buffer;
 }
 
+PacketType Packet::GetType() const { return _type; }
+unsigned int Packet::GetID() const { return _id; }
+unsigned int Packet::GetHintID() const { return _hintId; }
