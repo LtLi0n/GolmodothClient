@@ -191,7 +191,9 @@ void Player::DownloadScene()
 		int current_x = 0;
 		int current_y = 0;
 
-		for (int i = 21 + map_size_x_str.size() + map_size_y_str.size(); i < strlen(response_tiles->content); i++)
+		int header_length = strlen(response_tiles->content);
+
+		for (int i = 21 + map_size_x_str.size() + map_size_y_str.size(); i < header_length; i++)
 		{
 			if (response_tiles->content[i] == '\n')
 			{
@@ -204,7 +206,7 @@ void Player::DownloadScene()
 			}
 			else
 			{
-				tiles[current_y * map_size_y + current_x] = (int)response_tiles->content[i] - 48;
+				tiles[current_y * map_size_x + current_x] = (int)response_tiles->content[i] - 48;
 			}
 		}
 	}

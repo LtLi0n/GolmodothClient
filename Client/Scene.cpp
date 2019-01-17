@@ -57,16 +57,17 @@ void Scene::Update(class Player& player)
 	{
 		for (int x = 0; x < render_width; x++)
 		{
-			Tile t = *GetTileInfo(x, y);
+			Tile* t = GetTileInfo(x, y);
+			if (t == nullptr) continue;
 
-			_engine->DrawString(x * 3 + x, y * 2, t.GetDisplay(), t.GetColor());
+			_engine->DrawString(x * 3 + x, y * 2, t->GetDisplay(), t->GetColor());
 
 			//horizontal connections
 			if (x < render_width - 1)
 			{
 				if (GetTileID(x, y) == GetTileID(x + 1, y))
 				{
-					_engine->DrawString((x + 1) * 3 + x, y * 2, t.GetConnectionHorizontal(), t.GetColor());
+					_engine->DrawString((x + 1) * 3 + x, y * 2, t->GetConnectionHorizontal(), t->GetColor());
 				}
 			}
 
@@ -75,7 +76,7 @@ void Scene::Update(class Player& player)
 			{
 				if (GetTileID(x, y) == GetTileID(x, y + 1))
 				{
-					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, t.GetConnectionVertical(), t.GetColor());
+					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, t->GetConnectionVertical(), t->GetColor());
 				}
 			}
 		}
