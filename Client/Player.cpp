@@ -169,31 +169,52 @@ void Player::DownloadScene()
 		std::string map_size_x_str;
 		std::string map_size_y_str;
 
-		for (int i = 19; ; i++)
+		std::string player_pos_x;
+		std::string player_pos_y;
+
+		int offsetter = 0;
+
+		//width
+		for (int i = (offsetter = 19); ; i++)
 		{
 			if (response_tiles->content[i] == 'x') break;
 			map_size_x_str += response_tiles->content[i];
 		}
+		map_size_x = std::stoi(map_size_x_str);
 
-		for (int i = 20 + map_size_x_str.size(); ; i++)
+		//height
+		for (int i = (offsetter += 1 + map_size_x_str.size()); ; i++)
 		{
 			if (response_tiles->content[i] == '\n') break;
 			map_size_y_str += response_tiles->content[i];
 		}
-
-		map_size_x = std::stoi(map_size_x_str);
 		map_size_y = std::stoi(map_size_y_str);
 
-		int map_size = map_size_x * map_size_y;
+		//pos_x
+		for (int i = (offsetter += 1 + map_size_y_str.size()); ; i++)
+		{
+			if (response_tiles->content[i] == ' ') break;
+			player_pos_x += response_tiles->content[i];
+		}
 
-		tiles = new int[map_size];
+		//pos_y
+		for (int i = (offsetter += 1 + player_pos_x.size()); ; i++)
+		{
+			if (response_tiles->content[i] == '\n') break;
+			player_pos_y += response_tiles->content[i];
+		}
+
+		position.x = stoi(player_pos_x);
+		position.y = stoi(player_pos_y);
+
+		tiles = new int[map_size_x * map_size_y];
 
 		int current_x = 0;
 		int current_y = 0;
 
 		int header_length = strlen(response_tiles->content);
 
-		for (int i = 21 + map_size_x_str.size() + map_size_y_str.size(); i < header_length; i++)
+		for (int i = (offsetter += 1 + player_pos_y.size()); i < header_length; i++)
 		{
 			if (response_tiles->content[i] == '\n')
 			{
