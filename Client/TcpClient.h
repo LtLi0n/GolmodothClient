@@ -9,18 +9,21 @@
 
 #include "Packet.h"
 
+class Packet;
+
 class TcpClient
 {
 public:
 	TcpClient(const char* address, const unsigned short& port);
 	~TcpClient();
 
-	std::map<const unsigned int, Packet> receivedPackets;
+	std::map<const unsigned int, Packet*> receivedPackets;
 
 	int Start();
 	int Send(const Packet& packet);
-	Packet WaitHeader(const char* header) const;
-	Packet GetByHeader(const char* header) const;
+	int SendRequest(const char* content);
+	const Packet* WaitHeader(const char* header) const;
+	const Packet* GetByHeader(const char* header) const;
 
 private:
     const char* _address;

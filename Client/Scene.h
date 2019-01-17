@@ -11,23 +11,27 @@ class TransportNode;
 class Scene
 {
 public:
-	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height);
-	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, int tileTypeArr[]);
+	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[]);
 	~Scene();
 
 	int GetWidth() const { return _width; }
 	int GetHeight() const { return _height; }
 
-	const Tile GetTile(const int& x, const int& y) const;
-	void SetTile(const int& x, const int& y, const Tile& tile);
+	const int GetTileID(const int& x, const int& y) const;
+	void SetTileID(const int& x, const int& y, const int& id);
+
+	Tile* GetTileInfo(const int& id) const;
+	Tile* GetTileInfo(const int& x, const int& y) const;
+	void SetTileInfo(const int& id, Tile* tile);
 
 	void Update(class Player& player);
 
-	map<const int, TransportNode*> transport;
+	std::map<const int, TransportNode*> transport;
 
 private:
 	olcConsoleGameEngineOOP* _engine;
-	Tile* _tiles;
+	int* _tileIds;
+	std::map<const int, Tile*>* _tileInfo;
 
 	int _width;
 	int _height;

@@ -1,47 +1,50 @@
 ﻿#include "Scene.h"
 
-Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height)
+Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[])
 {
 	_engine = &engine;
 	_width = width;
 	_height = height;
-	_tiles = new Tile[_width * _height];
-
-	for (int x = 0; x < _width; x++) _tiles[x] = Tile(TILE_PATH);
-	for (int x = 0; x < _width; x++) _tiles[(_height - 1) * _width + x] = Tile(TILE_PATH);
-	for (int y = 0; y < _height; y++) _tiles[y * _width] = Tile(TILE_PATH);
-	for (int y = 0; y < _height; y++) _tiles[y * _width + _width - 1] = Tile(TILE_PATH);
-}
-
-Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, int tileTypeArr[])
-{
-	_engine = &engine;
-	_width = width;
-	_height = height;
-	_tiles = new Tile[_width * _height];
-
-	for (int y = 0; y < _height; y++)
-	{
-		for (int x = 0; x < _width; x++)
-		{
-			_tiles[y * _width + x] = Tile((TileType)tileTypeArr[y * _width + x]);
-		}
-	}
+	_tileInfo = tileInfo;
+	_tileIds = tileIds;
 }
 
 Scene::~Scene()
 {
-	delete[] _tiles;
+	//free up memory
+	for (auto const& pair : *_tileInfo)
+	{
+		delete pair.second;
+	}
+
+	delete[] _tileIds;
+	delete _tileInfo;
 }
 
-const Tile Scene::GetTile(const int& x, const int& y) const
+const int Scene::GetTileID(const int& x, const int& y) const
 {
-	return _tiles[y * _width + x];
+	return _tileIds[y * _width + x];
 }
 
-void Scene::SetTile(const int& x, const int& y, const Tile& tile)
+void Scene::SetTileID(const int& x, const int& y, const int& id)
 {
-	_tiles[y * _width + x] = tile;
+	_tileIds[y * _width + x] = id;
+}
+
+Tile* Scene::GetTileInfo(const int& id) const
+{
+	return (*_tileInfo)[id];
+}
+
+Tile* Scene::GetTileInfo(const int& x, const int& y) const
+{
+	return (*_tileInfo)[_tileIds[y * _width + x]];
+}
+
+void Scene::SetTileInfo(const int& id, Tile* tile)
+{
+	delete (*_tileInfo)[id];
+	(*_tileInfo)[id] = tile;
 }
 
 void Scene::Update(class Player& player)
@@ -54,63 +57,25 @@ void Scene::Update(class Player& player)
 	{
 		for (int x = 0; x < render_width; x++)
 		{
-			Tile t = _tiles[y * _width + x];
-			_engine->DrawString(x * 3 + x, y * 2, t.GetTileDisplay(), t.GetColor());
-			
-			TileType type1 = t.GetType();
+			Tile t = *GetTileInfo(x, y);
+
+			_engine->DrawString(x * 3 + x, y * 2, t.GetDisplay(), t.GetColor());
 
 			//horizontal connections
 			if (x < render_width - 1)
 			{
-				wchar_t connecting_char;
-				bool contains_connection = false;
-
-				TileType type2 = _tiles[y * _width + x + 1].GetType();
-
-				if (type1 == TILE_PATH && type2 == TILE_PATH)
+				if (GetTileID(x, y) == GetTileID(x + 1, y))
 				{
-					connecting_char = U'-';
-					contains_connection = true;
-				}
-				else if (type1 == TILE_WATER && type2 == TILE_WATER)
-				{
-					connecting_char = U'o';
-					contains_connection = true;
-				}
-
-				if (contains_connection)
-				{
-					_engine->Draw((x + 1) * 3 + x, y * 2, connecting_char, t.GetColor());
+					_engine->DrawString((x + 1) * 3 + x, y * 2, t.GetConnectionHorizontal(), t.GetColor());
 				}
 			}
 
 			//vertical connections
 			if (y < render_height - 1)
 			{
-				wstring connecting_string;
-				bool contains_connection = false;
-
-				TileType type2 = _tiles[(y + 1) * _width + x].GetType();
-
-				if (type1 == TILE_PATH && type2 == TILE_PATH)
+				if (GetTileID(x, y) == GetTileID(x, y + 1))
 				{
-					connecting_string = L" | ";
-					contains_connection = true;
-				}
-				else if (type1 == TILE_GRASS && type2 == TILE_GRASS)
-				{
-					connecting_string = L" x ";
-					contains_connection = true;
-				}
-				else if (type1 == TILE_WATER && type2 == TILE_WATER)
-				{
-					connecting_string = L"ooo";
-					contains_connection = true;
-				}
-
-				if (contains_connection)
-				{
-					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, connecting_string, t.GetColor());
+					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, t.GetConnectionVertical(), t.GetColor());
 				}
 			}
 		}

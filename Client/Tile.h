@@ -1,27 +1,27 @@
 #pragma once
 
 #include <string>
-using namespace std;
-
-enum TileType
-{
-	TILE_NULL, TILE_PATH, TILE_GRASS, TILE_WATER
-};
 
 class Tile
 {
 public:
-	Tile(const TileType& type, const short& color);
-	Tile() : _type(TILE_NULL), _color(15) { }
-	Tile(const TileType& type);
+	Tile(const std::wstring& display,
+		const short& color, 
+		const bool& walkable, 
+		const std::wstring& connection_horizontal,
+		const std::wstring& connection_vertical);
 
-	TileType GetType() const { return _type; }
-	wstring GetTileDisplay() const;
-	short GetColor() const { return _color; }
-	bool Walkable() const;
+	const std::wstring GetDisplay() const { return _display; }
+	const short GetColor() const { return _color; }
+	const bool Walkable() const { return _walkable; };
+	const std::wstring GetConnectionHorizontal() const { return _connection_horizontal; }
+	const std::wstring GetConnectionVertical() const { return _connection_vertical; }
 
 private:
-	TileType _type;
+	std::wstring _display;
 	short _color;
+	bool _walkable;
+	std::wstring _connection_horizontal;
+	std::wstring _connection_vertical;
 };
 

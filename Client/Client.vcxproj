@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="InterfaceObject.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="olcConsoleGameEngineOOP.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Player.h" />
@@ -139,6 +140,9 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

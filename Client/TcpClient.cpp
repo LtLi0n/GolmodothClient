@@ -58,36 +58,34 @@ int TcpClient::Send(const Packet& packet)
 	return send(_socket, packet.GenerateBuffer(), 2040, NULL);
 }
 
-Packet TcpClient::WaitHeader(const char* header) const
+int TcpClient::SendRequest(const char* content)
+{
+	Packet p(PACKET_REQUEST);
+	p.content = content;
+
+	return send(_socket, p.GenerateBuffer(), 2040, NULL);
+}
+
+const Packet* TcpClient::WaitHeader(const char* header) const
 {
 	while (true)
 	{
-		for (auto const& x : receivedPackets)
+		const Packet* p = GetByHeader(header);
+
+		if (p != nullptr)
 		{
-			std::string headerStr = "";
-			bool header_found = false;
-
-			for (int i = 0; i < 2039; i++)
-			{
-				if (x.second.content[i] == '\0') break;
-				if (x.second.content[i] == '\n')
-				{
-					header_found = true;
-					break;
-				}
-				headerStr += x.second.content[i];
-			}
-
-			if (strcmp(headerStr.c_str(), header) == 0) return x.second;
+			return p;
 		}
 	}
 }
 
-Packet TcpClient::GetByHeader(const char* header) const
+const Packet* TcpClient::GetByHeader(const char* header) const
 {
 	for (auto const& x : receivedPackets)
 	{
-		const char* content = x.second.content;
+		if (x.second == nullptr) continue;
+
+		const char* content = x.second->content;
 		std::string headerStr = "";
 		bool header_found = false;
 
@@ -104,6 +102,8 @@ Packet TcpClient::GetByHeader(const char* header) const
 
 		if (strcmp(headerStr.c_str(), header) == 0) return x.second;
 	}
+
+	return nullptr;
 }
 
 void TcpClient::Listen()
@@ -127,8 +127,8 @@ void TcpClient::Listen()
 
 		if (packet_type != PACKET_NULL)
 		{
-			Packet packet(packet_type, packet_id, packet_hintId);
-			packet.content = content;
+			Packet* packet = new Packet(packet_type, packet_id, packet_hintId);
+			packet->content = content;
 
 			receivedPackets[packet_id] = packet;
 		}
