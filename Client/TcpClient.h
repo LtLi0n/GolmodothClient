@@ -24,6 +24,7 @@ public:
 	int SendRequest(const char* content);
 	const Packet* WaitHeader(const char* header) const;
 	const Packet* GetByHeader(const char* header) const;
+	void DeletePacket(const Packet* packet);
 
 private:
     const char* _address;

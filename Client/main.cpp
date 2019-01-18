@@ -32,7 +32,7 @@ public:
 		tcp->Start();
 
 		player = new Player(*this, tcp);
-		player->DownloadScene();
+		player->DownloadScene(true);
 	}
 
 protected:

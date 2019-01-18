@@ -84,7 +84,7 @@ void Scene::Update(class Player& player)
 	for (pair<const int, TransportTile*>& pair : transport)
 	{
 		int x = pair.first % _width;
-		int y = pair.first / _height;
+		int y = pair.first / _width;
 
 		_engine->DrawString(x * 3 + x, y * 2, pair.second->GetDisplay(), FG_RED);
 	}

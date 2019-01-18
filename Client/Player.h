@@ -16,7 +16,7 @@ public:
 
 	void Update();
 
-	void DownloadScene();
+	void DownloadScene(const bool& sendPackets);
 
 private:
 	olcConsoleGameEngineOOP* _engine;

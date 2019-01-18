@@ -106,6 +106,19 @@ const Packet* TcpClient::GetByHeader(const char* header) const
 	return nullptr;
 }
 
+void TcpClient::DeletePacket(const Packet* packet)
+{
+	for (auto const& x : receivedPackets)
+	{
+		if (x.second == packet)
+		{
+			receivedPackets.erase(x.first);
+			delete packet;
+			break;
+		}
+	}
+}
+
 void TcpClient::Listen()
 {
 	while (_listening)

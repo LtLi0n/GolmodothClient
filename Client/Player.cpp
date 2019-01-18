@@ -19,6 +19,9 @@ void Player::Update()
 
 	bool isOnTransport = scene->transport.count(position.y * scene->GetWidth() + position.x) == 1;
 
+	bool position_change = false;
+	bool transport_request = false;
+
 	//input code
 	if (_engine->IsFocused())
 	{
@@ -30,8 +33,11 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				//todo
-				//request server for new scene
+				if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_NORTH)
+				{
+					transport_request = true;
+					skip = true;
+				}
 			}
 
 			//move north
@@ -40,6 +46,7 @@ void Player::Update()
 				if (scene->GetTileInfo(position.x, position.y - 1)->Walkable())
 				{
 					position.y--;
+					position_change = true;
 				}
 			}
 		}
@@ -51,8 +58,11 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				//todo
-				//request server for new scene
+				if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_EAST)
+				{
+					transport_request = true;
+					skip = true;
+				}
 			}
 
 			//move east
@@ -61,6 +71,7 @@ void Player::Update()
 				if (scene->GetTileInfo(position.x + 1, position.y)->Walkable())
 				{
 					position.x++;
+					position_change = true;
 				}
 			}
 		}
@@ -72,8 +83,11 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				//todo
-				//request server for new scene
+				if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_SOUTH)
+				{
+					transport_request = true;
+					skip = true;
+				}
 			}
 
 			//move south
@@ -82,6 +96,7 @@ void Player::Update()
 				if (scene->GetTileInfo(position.x, position.y + 1)->Walkable())
 				{
 					position.y++;
+					position_change = true;
 				}
 			}
 		}
@@ -93,8 +108,11 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				//todo
-				//request server for new scene
+				if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_WEST)
+				{
+					transport_request = true;
+					skip = true;
+				}
 			}
 
 			//move west
@@ -103,19 +121,37 @@ void Player::Update()
 				if (scene->GetTileInfo(position.x - 1, position.y)->Walkable())
 				{
 					position.x--;
+					position_change = true;
 				}
 			}
+		}
+
+		if (position_change)
+		{
+			Packet pos_update = Packet(PACKET_SEND);
+			std::string content = "map.sync->position\nx: " + std::to_string(position.x) + "\ny: " + std::to_string(position.y);
+			pos_update.content = content.c_str();
+			_tcp->Send(pos_update);
+		}
+
+		if (transport_request)
+		{
+			_tcp->SendRequest("map.request->transport\n");
+			DownloadScene(false);
 		}
 	}
 
 	scene->Update(*this);
 }
 
-void Player::DownloadScene()
+void Player::DownloadScene(const bool& sendPackets)
 {
-	_tcp->SendRequest("map.request->tile_info\n");
-	_tcp->SendRequest("map.request->tiles\n");
-	_tcp->SendRequest("map.request->transport_nodes\n");
+	if (sendPackets)
+	{
+		_tcp->SendRequest("map.request->tile_info\n");
+		_tcp->SendRequest("map.request->tiles\n");
+		_tcp->SendRequest("map.request->transport_nodes\n");
+	}
 
 	std::map<const int, Tile*>* tile_info = new std::map<const int, Tile*>();
 
@@ -221,13 +257,12 @@ void Player::DownloadScene()
 
 		for (int i = 0; i < json.size(); i++)
 		{
-			scene->transport[json[i]["y"].get<int>() * map_size_y + json[i]["x"].get<int>()] = new TransportTile((TransportDirection)json[i]["direction"].get<int>());
+			scene->transport[json[i]["y"].get<int>() * map_size_x + json[i]["x"].get<int>()] = new TransportTile((TransportDirection)json[i]["direction"].get<int>());
 		}
 
 		bool stopHere = true;
 	}
-
-	delete response_tileInfo;
-	delete response_tiles;
-	delete response_transportNodes;
+	_tcp->DeletePacket(response_tileInfo);
+	_tcp->DeletePacket(response_tiles);
+	_tcp->DeletePacket(response_transportNodes);
 }
