@@ -2,7 +2,7 @@
 
 #include "Player.h"
 #include "Tile.h"
-#include "TransportNode.h"
+#include "TransportTile.h"
 
 #include <map>
 
@@ -26,7 +26,7 @@ public:
 
 	void Update(class Player& player);
 
-	std::map<const int, TransportNode*> transport;
+	std::map<const int, TransportTile*> transport;
 
 private:
 	olcConsoleGameEngineOOP* _engine;

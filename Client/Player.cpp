@@ -30,13 +30,8 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-				if (tn->GetDirection() == TRANSPORT_NORTH)
-				{
-					scene = tn->GetTarget();
-					position = tn->GetTargetLocation();
-					skip = true;
-				}
+				//todo
+				//request server for new scene
 			}
 
 			//move north
@@ -56,13 +51,8 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-				if (tn->GetDirection() == TRANSPORT_EAST)
-				{
-					scene = tn->GetTarget();
-					position = tn->GetTargetLocation();
-					skip = true;
-				}
+				//todo
+				//request server for new scene
 			}
 
 			//move east
@@ -82,13 +72,8 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-				if (tn->GetDirection() == TRANSPORT_SOUTH)
-				{
-					scene = tn->GetTarget();
-					position = tn->GetTargetLocation();
-					skip = true;
-				}
+				//todo
+				//request server for new scene
 			}
 
 			//move south
@@ -108,13 +93,8 @@ void Player::Update()
 			//change scenes
 			if (isOnTransport)
 			{
-				TransportNode* tn = scene->transport[position.y * scene->GetWidth() + position.x];
-				if (tn->GetDirection() == TRANSPORT_WEST)
-				{
-					scene = tn->GetTarget();
-					position = tn->GetTargetLocation();
-					skip = true;
-				}
+				//todo
+				//request server for new scene
 			}
 
 			//move west
@@ -135,6 +115,7 @@ void Player::DownloadScene()
 {
 	_tcp->SendRequest("map.request->tile_info\n");
 	_tcp->SendRequest("map.request->tiles\n");
+	_tcp->SendRequest("map.request->transport_nodes\n");
 
 	std::map<const int, Tile*>* tile_info = new std::map<const int, Tile*>();
 
@@ -142,8 +123,6 @@ void Player::DownloadScene()
 	const Packet* response_tileInfo = _tcp->WaitHeader("map.request->tile_info");
 	{	
 		json json = json::parse(response_tileInfo->content + 23);
-
-		bool test = json.is_array();
 
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
@@ -232,9 +211,23 @@ void Player::DownloadScene()
 		}
 	}
 
+	delete scene;
+	scene = new Scene(*_engine, map_size_x, map_size_y, tile_info, tiles);
+
+	//load transport tiles
+	const Packet* response_transportNodes = _tcp->WaitHeader("map.request->transport_nodes");
+	{
+		json json = json::parse(response_transportNodes->content + 29);
+
+		for (int i = 0; i < json.size(); i++)
+		{
+			scene->transport[json[i]["y"].get<int>() * map_size_y + json[i]["x"].get<int>()] = new TransportTile((TransportDirection)json[i]["direction"].get<int>());
+		}
+
+		bool stopHere = true;
+	}
+
 	delete response_tileInfo;
 	delete response_tiles;
-	delete scene;
-
-	scene = new Scene(*_engine, map_size_x, map_size_y, tile_info, tiles);
+	delete response_transportNodes;
 }

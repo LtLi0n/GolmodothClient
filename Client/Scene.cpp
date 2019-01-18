@@ -12,10 +12,8 @@ Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& heigh
 Scene::~Scene()
 {
 	//free up memory
-	for (auto const& pair : *_tileInfo)
-	{
-		delete pair.second;
-	}
+	for (auto const& pair : *_tileInfo) delete pair.second;
+	for (auto const& pair : transport) delete pair.second;
 
 	delete[] _tileIds;
 	delete _tileInfo;
@@ -83,7 +81,7 @@ void Scene::Update(class Player& player)
 	}
 
 	//render transport nodes
-	for (pair<const int, TransportNode*>& pair : transport)
+	for (pair<const int, TransportTile*>& pair : transport)
 	{
 		int x = pair.first % _width;
 		int y = pair.first / _height;

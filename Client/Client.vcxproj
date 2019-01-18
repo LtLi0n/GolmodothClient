@@ -124,7 +124,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="TcpClient.cpp" />
     <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="TransportNode.cpp" />
+    <ClCompile Include="TransportTile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
@@ -136,7 +136,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="TcpClient.h" />
     <ClInclude Include="Tile.h" />
-    <ClInclude Include="TransportNode.h" />
+    <ClInclude Include="TransportTile.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />

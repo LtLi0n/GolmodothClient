@@ -42,9 +42,6 @@
     <ClCompile Include="Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TransportNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="olcConsoleGameEngineOOP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,6 +49,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Packet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransportTile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,9 +77,6 @@
     <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TransportNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="olcConsoleGameEngineOOP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransportTile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
