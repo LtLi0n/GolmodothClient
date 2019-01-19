@@ -141,7 +141,7 @@ void Player::Update()
 		}
 	}
 
-	scene->Update(*this);
+	scene->Update(_tcp, *this);
 }
 
 void Player::DownloadScene(const bool& sendPackets)
@@ -262,6 +262,9 @@ void Player::DownloadScene(const bool& sendPackets)
 
 		bool stopHere = true;
 	}
+
+	scene->DownloadPlayers(_tcp, true);
+
 	_tcp->DeletePacket(response_tileInfo);
 	_tcp->DeletePacket(response_tiles);
 	_tcp->DeletePacket(response_transportNodes);

@@ -58,7 +58,7 @@ int TcpClient::Send(const Packet& packet)
 	return send(_socket, packet.GenerateBuffer(), 2040, NULL);
 }
 
-int TcpClient::SendRequest(const char* content)
+int TcpClient::SendRequest(const char* content) const 
 {
 	Packet p(PACKET_REQUEST);
 	p.content = content;

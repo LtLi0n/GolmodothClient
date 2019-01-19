@@ -1,12 +1,16 @@
 #pragma once
 
 #include "Player.h"
+#include "TcpClient.h"
+#include "OtherPlayer.h"
 #include "Tile.h"
 #include "TransportTile.h"
+#include "json.hpp"
 
 #include <map>
 
 class TransportNode;
+class Player;
 
 class Scene
 {
@@ -24,9 +28,12 @@ public:
 	Tile* GetTileInfo(const int& x, const int& y) const;
 	void SetTileInfo(const int& id, Tile* tile);
 
-	void Update(class Player& player);
+	void Update(TcpClient* tcp, Player& player);
 
 	std::map<const int, TransportTile*> transport;
+	std::map<const int, OtherPlayer*> players;
+
+	void DownloadPlayers(TcpClient* tcp, bool request);
 
 private:
 	olcConsoleGameEngineOOP* _engine;

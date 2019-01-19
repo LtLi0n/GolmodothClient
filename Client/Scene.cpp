@@ -1,5 +1,7 @@
 ﻿#include "Scene.h"
 
+using json = nlohmann::json;
+
 Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[])
 {
 	_engine = &engine;
@@ -14,6 +16,7 @@ Scene::~Scene()
 	//free up memory
 	for (auto const& pair : *_tileInfo) delete pair.second;
 	for (auto const& pair : transport) delete pair.second;
+	for (auto const& pair : players) delete pair.second;
 
 	delete[] _tileIds;
 	delete _tileInfo;
@@ -45,8 +48,13 @@ void Scene::SetTileInfo(const int& id, Tile* tile)
 	(*_tileInfo)[id] = tile;
 }
 
-void Scene::Update(class Player& player)
+void Scene::Update(TcpClient* tcp, Player& player)
 {
+	if (tcp->GetByHeader("map.request->players") != nullptr)
+	{
+		DownloadPlayers(tcp, false);
+	}
+
 	int render_height = _engine->ScreenHeight() > _height ? _height : _engine->ScreenHeight();
 	int render_width = _engine->ScreenWidth() > _width ? _width : _engine->ScreenWidth();
 
@@ -72,9 +80,15 @@ void Scene::Update(class Player& player)
 			//vertical connections
 			if (y < render_height - 1)
 			{
-				if (GetTileID(x, y) == GetTileID(x, y + 1))
+				if (GetTileID(x, y) == GetTileID(x, y + 1) || (GetTileID(x, y) == 2 || GetTileID(x, y) == 3))
 				{
 					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, t->GetConnectionVertical(), t->GetColor());
+				}
+				else if (GetTileID(x, y + 1) == 2 || GetTileID(x, y + 1) == 3)
+				{
+					Tile* tOff = GetTileInfo(x, y + 1);
+
+					_engine->DrawString(x * 3 + x, y * 2 + 1, tOff->GetConnectionVertical(), tOff->GetColor());
 				}
 			}
 		}
@@ -88,4 +102,32 @@ void Scene::Update(class Player& player)
 
 		_engine->DrawString(x * 3 + x, y * 2, pair.second->GetDisplay(), FG_RED);
 	}
+
+	//render players
+	for (auto const& pair : players)
+	{
+		_engine->DrawString(pair.second->position.x * 3 + pair.second->position.x, pair.second->position.y * 2, L"[o]", FG_YELLOW);
+	}
+}
+
+void Scene::DownloadPlayers(TcpClient* tcp, bool request)
+{
+	if (request) tcp->SendRequest("map.request->players\n");
+
+	const Packet* packet_players = tcp->WaitHeader("map.request->players");
+
+	json json = json::parse(packet_players->content + 21);
+
+	for (auto const& pair : players) delete pair.second;
+	players.clear();
+
+	for (int i = 0; i < json.size(); i++)
+	{
+		OtherPlayer* op = new OtherPlayer(json[i]["id"].get<int>());
+		op->position = Vector2(json[i]["x"].get<int>(), json[i]["y"].get<int>());
+
+		players[op->GetID()] = op;
+	}
+
+	tcp->DeletePacket(packet_players);
 }

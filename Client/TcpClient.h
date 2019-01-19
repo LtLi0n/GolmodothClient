@@ -21,7 +21,7 @@ public:
 
 	int Start();
 	int Send(const Packet& packet);
-	int SendRequest(const char* content);
+	int SendRequest(const char* content) const;
 	const Packet* WaitHeader(const char* header) const;
 	const Packet* GetByHeader(const char* header) const;
 	void DeletePacket(const Packet* packet);

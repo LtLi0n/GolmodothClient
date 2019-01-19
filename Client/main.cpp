@@ -64,6 +64,6 @@ int main()
 {	
 	Game game;
 
-	game.ConstructConsole(110, 50, 8, 16);
+	game.ConstructConsole(190, 50, 8, 16);
 	game.Start();
 }
