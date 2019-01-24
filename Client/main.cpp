@@ -28,7 +28,7 @@ public:
 
 	Game()
 	{
-		tcp = new TcpClient("192.168.1.233", 5000);
+		tcp = new TcpClient("127.0.0.1", 5000);
 		tcp->Start();
 
 		player = new Player(*this, tcp);
@@ -50,12 +50,6 @@ protected:
 
 		player->Update();
 
-		DrawString(
-			player->position.x * 4,
-			player->position.y * 2,
-			L"[@]",
-			FG_RED);
-
 		return true;
 	}
 };
@@ -64,6 +58,6 @@ int main()
 {	
 	Game game;
 
-	game.ConstructConsole(190, 50, 8, 16);
+	game.ConstructConsole(71, 71, 8, 8);
 	game.Start();
 }

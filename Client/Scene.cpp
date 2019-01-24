@@ -55,40 +55,75 @@ void Scene::Update(TcpClient* tcp, Player& player)
 		DownloadPlayers(tcp, false);
 	}
 
-	int render_height = _engine->ScreenHeight() > _height ? _height : _engine->ScreenHeight();
-	int render_width = _engine->ScreenWidth() > _width ? _width : _engine->ScreenWidth();
+	int render_height = _engine->ScreenHeight() / 2 > _height ? _height : _engine->ScreenHeight() / 2;
+	int render_width = (_engine->ScreenWidth() + 1) / 4 > _width ? _width : (_engine->ScreenWidth() / 4 + 1);
+
+	int map_width = _width;
+
+	int x0 = player.position.x - render_width / 2;
+	int x1 = player.position.x + render_width / 2 + render_width % 2;
+	int y0 = player.position.y - render_height / 2;
+	int y1 = player.position.y + render_height / 2 + render_height % 2;
+
+	//x axis
+	if (x0 < 0)
+	{
+		x1 += abs(x0);
+		x0 = 0;
+	}
+	if (x1 > _width)
+	{
+		x0 -= x1 - _width;
+		x1 = _width;
+	}
+
+	//y axis
+	if (y0 < 0)
+	{
+		y1 += abs(y0);
+		y0 = 0;
+	}
+	if (y1 > _height)
+	{
+		y0 -= y1 - _height;
+		y1 = _height;
+	}
 
 	//render tiles
-	for (int y = 0; y < render_height; y++)
+	for (int y = y0; y < y1; y++)
 	{
-		for (int x = 0; x < render_width; x++)
+		int engine_y = y - y0;
+
+		for (int x = x0; x < x1; x++)
 		{
+			int engine_x = x - x0;
+
 			Tile* t = GetTileInfo(x, y);
 			if (t == nullptr) continue;
 
-			_engine->DrawString(x * 3 + x, y * 2, t->GetDisplay(), t->GetColor());
+			_engine->DrawString(engine_x * 3 + engine_x, engine_y * 2, t->GetDisplay(), t->GetColor());
 
 			//horizontal connections
-			if (x < render_width - 1)
+			if (engine_x < render_width - 1)
 			{
 				if (GetTileID(x, y) == GetTileID(x + 1, y))
 				{
-					_engine->DrawString((x + 1) * 3 + x, y * 2, t->GetConnectionHorizontal(), t->GetColor());
+					_engine->DrawString((engine_x + 1) * 3 + engine_x, engine_y * 2, t->GetConnectionHorizontal(), t->GetColor());
 				}
 			}
 
 			//vertical connections
-			if (y < render_height - 1)
+			if (engine_y < render_height - 1)
 			{
 				if (GetTileID(x, y) == GetTileID(x, y + 1) || (GetTileID(x, y) == 2 || GetTileID(x, y) == 3))
 				{
-					_engine->DrawString(x * 3 + x, (y + 1) * 2 - 1, t->GetConnectionVertical(), t->GetColor());
+					_engine->DrawString(engine_x * 3 + engine_x, (engine_y + 1) * 2 - 1, t->GetConnectionVertical(), t->GetColor());
 				}
 				else if (GetTileID(x, y + 1) == 2 || GetTileID(x, y + 1) == 3)
 				{
 					Tile* tOff = GetTileInfo(x, y + 1);
 
-					_engine->DrawString(x * 3 + x, y * 2 + 1, tOff->GetConnectionVertical(), tOff->GetColor());
+					_engine->DrawString(engine_x * 3 + engine_x, engine_y * 2 + 1, tOff->GetConnectionVertical(), tOff->GetColor());
 				}
 			}
 		}
@@ -100,7 +135,10 @@ void Scene::Update(TcpClient* tcp, Player& player)
 		int x = pair.first % _width;
 		int y = pair.first / _width;
 
-		_engine->DrawString(x * 3 + x, y * 2, pair.second->GetDisplay(), FG_RED);
+		if (x > x1 || x < x0) continue;
+		if (y > y1 || y < y0) continue;
+
+		_engine->DrawString((x - x0) * 3 + (x - x0), (y - y0) * 2, pair.second->GetDisplay(), FG_RED);
 	}
 
 	//render players
@@ -108,6 +146,13 @@ void Scene::Update(TcpClient* tcp, Player& player)
 	{
 		_engine->DrawString(pair.second->position.x * 3 + pair.second->position.x, pair.second->position.y * 2, L"[o]", FG_YELLOW);
 	}
+
+	//render player
+	_engine->DrawString(
+		(player.position.x - x0) * 4,
+		(player.position.y - y0) * 2,
+		L"[@]",
+		FG_RED);
 }
 
 void Scene::DownloadPlayers(TcpClient* tcp, bool request)
