@@ -56,7 +56,7 @@ void Scene::Update(TcpClient* tcp, Player& player)
 	}
 
 	int render_height = _engine->ScreenHeight() / 2 > _height ? _height : _engine->ScreenHeight() / 2;
-	int render_width = (_engine->ScreenWidth() + 1) / 4 > _width ? _width : (_engine->ScreenWidth() / 4 + 1);
+	int render_width = (_engine->ScreenWidth() + 1) / 4 > _width ? _width : (_engine->ScreenWidth() + 1) / 4;
 
 	int map_width = _width;
 

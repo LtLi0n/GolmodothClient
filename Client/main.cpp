@@ -28,7 +28,7 @@ public:
 
 	Game()
 	{
-		tcp = new TcpClient("127.0.0.1", 5000);
+		tcp = new TcpClient("192.168.1.233", 5000);
 		tcp->Start();
 
 		player = new Player(*this, tcp);
@@ -58,6 +58,6 @@ int main()
 {	
 	Game game;
 
-	game.ConstructConsole(71, 71, 8, 8);
+	game.ConstructConsole(100, 60, 12, 12);
 	game.Start();
 }
