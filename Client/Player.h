@@ -6,13 +6,14 @@
 #include "Scene.h"
 
 class TcpClient;
+class Scene;
 
 class Player
 {
 public:
 	Player(olcConsoleGameEngineOOP& engine, TcpClient* tcp);
 	Vector3 position;
-	class Scene* scene;
+	Scene* scene;
 
 	void Update();
 

@@ -58,6 +58,6 @@ int main()
 {	
 	Game game;
 
-	game.ConstructConsole(100, 60, 12, 12);
+	game.ConstructConsole(4 * 31, 2 * 25, 9, 15);
 	game.Start();
 }
