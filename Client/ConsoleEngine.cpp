@@ -23,9 +23,9 @@ Twitch:		http://www.twitch.tv/javidx9
 SoundCloud: https://www.soundcloud.com/onelonecoder
 */
 
-#include "olcConsoleGameEngineOOP.h"
+#include "ConsoleEngine.h"
 
-olcConsoleGameEngineOOP::olcConsoleGameEngineOOP()
+ConsoleEngine::ConsoleEngine()
 {
 	m_nScreenWidth = 80;
 	m_nScreenHeight = 30;
@@ -43,13 +43,13 @@ olcConsoleGameEngineOOP::olcConsoleGameEngineOOP()
 	m_sAppName = L"Default";
 }
 
-olcConsoleGameEngineOOP::~olcConsoleGameEngineOOP()
+ConsoleEngine::~ConsoleEngine()
 {
 	SetConsoleActiveScreenBuffer(m_hOriginalConsole);
 	delete[] m_bufScreen;
 }
 
-int olcConsoleGameEngineOOP::ConstructConsole(int width, int height, int fontw, int fonth)
+int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
 {
 	if (m_hConsole == INVALID_HANDLE_VALUE)
 		return Error(L"Bad Handle");
@@ -124,7 +124,7 @@ int olcConsoleGameEngineOOP::ConstructConsole(int width, int height, int fontw, 
 	return 1;
 }
 
-void olcConsoleGameEngineOOP::Draw(int x, int y, wchar_t c, short col)
+void ConsoleEngine::Draw(int x, int y, wchar_t c, short col)
 {
 	if (x >= 0 && x < m_nScreenWidth && y >= 0 && y < m_nScreenHeight)
 	{
@@ -133,7 +133,7 @@ void olcConsoleGameEngineOOP::Draw(int x, int y, wchar_t c, short col)
 	}
 }
 
-void olcConsoleGameEngineOOP::Fill(int x1, int y1, int x2, int y2, wchar_t c, short col)
+void ConsoleEngine::Fill(int x1, int y1, int x2, int y2, wchar_t c, short col)
 {
 	Clip(x1, y1);
 	Clip(x2, y2);
@@ -142,7 +142,7 @@ void olcConsoleGameEngineOOP::Fill(int x1, int y1, int x2, int y2, wchar_t c, sh
 			Draw(x, y, c, col);
 }
 
-void olcConsoleGameEngineOOP::DrawString(int x, int y, wstring c, short col)
+void ConsoleEngine::DrawString(int x, int y, wstring c, short col)
 {
 	for (size_t i = 0; i < c.size(); i++)
 	{
@@ -151,7 +151,7 @@ void olcConsoleGameEngineOOP::DrawString(int x, int y, wstring c, short col)
 	}
 }
 
-void olcConsoleGameEngineOOP::DrawStringAlpha(int x, int y, wstring c, short col)
+void ConsoleEngine::DrawStringAlpha(int x, int y, wstring c, short col)
 {
 	for (size_t i = 0; i < c.size(); i++)
 	{
@@ -163,7 +163,7 @@ void olcConsoleGameEngineOOP::DrawStringAlpha(int x, int y, wstring c, short col
 	}
 }
 
-void olcConsoleGameEngineOOP::Clip(int &x, int &y)
+void ConsoleEngine::Clip(int &x, int &y)
 {
 	if (x < 0) x = 0;
 	if (x >= m_nScreenWidth) x = m_nScreenWidth;
@@ -171,7 +171,7 @@ void olcConsoleGameEngineOOP::Clip(int &x, int &y)
 	if (y >= m_nScreenHeight) y = m_nScreenHeight;
 }
 
-void olcConsoleGameEngineOOP::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short col)
+void ConsoleEngine::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short col)
 {
 	int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 	dx = x2 - x1;
@@ -244,7 +244,7 @@ void olcConsoleGameEngineOOP::DrawLine(int x1, int y1, int x2, int y2, wchar_t c
 	}
 }
 
-void olcConsoleGameEngineOOP::DrawCircle(int xc, int yc, int r, wchar_t c, short col)
+void ConsoleEngine::DrawCircle(int xc, int yc, int r, wchar_t c, short col)
 {
 	int x = 0;
 	int y = r;
@@ -266,7 +266,7 @@ void olcConsoleGameEngineOOP::DrawCircle(int xc, int yc, int r, wchar_t c, short
 	}
 }
 
-void olcConsoleGameEngineOOP::FillCircle(int xc, int yc, int r, wchar_t c, short col)
+void ConsoleEngine::FillCircle(int xc, int yc, int r, wchar_t c, short col)
 {
 	// Taken from wikipedia
 	int x = 0;
@@ -292,7 +292,7 @@ void olcConsoleGameEngineOOP::FillCircle(int xc, int yc, int r, wchar_t c, short
 	}
 };
 
-void olcConsoleGameEngineOOP::DrawSprite(int x, int y, olcSprite *sprite)
+void ConsoleEngine::DrawSprite(int x, int y, olcSprite *sprite)
 {
 	if (sprite == nullptr)
 		return;
@@ -307,7 +307,7 @@ void olcConsoleGameEngineOOP::DrawSprite(int x, int y, olcSprite *sprite)
 	}
 }
 
-void olcConsoleGameEngineOOP::DrawPartialSprite(int x, int y, olcSprite *sprite, int ox, int oy, int w, int h)
+void ConsoleEngine::DrawPartialSprite(int x, int y, olcSprite *sprite, int ox, int oy, int w, int h)
 {
 	if (sprite == nullptr)
 		return;
@@ -322,7 +322,7 @@ void olcConsoleGameEngineOOP::DrawPartialSprite(int x, int y, olcSprite *sprite,
 	}
 }
 
-void olcConsoleGameEngineOOP::DrawWireFrameModel(const vector<pair<float, float>> &vecModelCoordinates, float x, float y, float r, float s, short col, wchar_t c)
+void ConsoleEngine::DrawWireFrameModel(const vector<pair<float, float>> &vecModelCoordinates, float x, float y, float r, float s, short col, wchar_t c)
 {
 	// pair.first = x coordinate
 	// pair.second = y coordinate
@@ -365,28 +365,28 @@ void olcConsoleGameEngineOOP::DrawWireFrameModel(const vector<pair<float, float>
 
 
 
-void olcConsoleGameEngineOOP::Start()
+void ConsoleEngine::Start()
 {
 	m_bAtomActive = true;
 
 	// Star the thread
-	thread t = thread(&olcConsoleGameEngineOOP::GameThread, this);
+	thread t = thread(&ConsoleEngine::GameThread, this);
 
 	// Wait for thread to be exited
 	t.join();
 }
 
-int olcConsoleGameEngineOOP::ScreenWidth()
+int ConsoleEngine::ScreenWidth()
 {
 	return m_nScreenWidth;
 }
 
-int olcConsoleGameEngineOOP::ScreenHeight()
+int ConsoleEngine::ScreenHeight()
 {
 	return m_nScreenHeight;
 }
 
-void olcConsoleGameEngineOOP::GameThread()
+void ConsoleEngine::GameThread()
 {
 	// Create user resources as part of this thread
 	if (!OnUserCreate())
@@ -548,12 +548,12 @@ void olcConsoleGameEngineOOP::GameThread()
 
 
 // Optional for clean up 
-bool olcConsoleGameEngineOOP::OnUserDestroy()
+bool ConsoleEngine::OnUserDestroy()
 {
 	return true;
 }
 
-int olcConsoleGameEngineOOP::Error(const wchar_t *msg)
+int ConsoleEngine::Error(const wchar_t *msg)
 {
 	wchar_t buf[256];
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
@@ -562,7 +562,7 @@ int olcConsoleGameEngineOOP::Error(const wchar_t *msg)
 	return 0;
 }
 
-BOOL olcConsoleGameEngineOOP::CloseHandler(DWORD evt)
+BOOL ConsoleEngine::CloseHandler(DWORD evt)
 {
 	// Note this gets called in a seperate OS thread, so it must
 	// only exit when the game has finished cleaning up, or else
@@ -578,7 +578,7 @@ BOOL olcConsoleGameEngineOOP::CloseHandler(DWORD evt)
 	return true;
 }
 
-unsigned int olcConsoleGameEngineOOP::LoadAudioSample(std::wstring sWavFile)
+unsigned int ConsoleEngine::LoadAudioSample(std::wstring sWavFile)
 {
 	if (!m_bEnableSound)
 		return -1;
@@ -594,7 +594,7 @@ unsigned int olcConsoleGameEngineOOP::LoadAudioSample(std::wstring sWavFile)
 }
 
 // Add sample 'id' to the mixers sounds to play list
-void olcConsoleGameEngineOOP::PlaySample(int id, bool bLoop)
+void ConsoleEngine::PlaySample(int id, bool bLoop)
 {
 	sCurrentlyPlayingSample a;
 	a.nAudioSampleID = id;
@@ -610,7 +610,7 @@ void StopSample(int id)
 }
 
 // The audio system uses by default a specific wave format
-bool olcConsoleGameEngineOOP::CreateAudio(unsigned int nSampleRate, unsigned int nChannels,
+bool ConsoleEngine::CreateAudio(unsigned int nSampleRate, unsigned int nChannels,
 	unsigned int nBlocks, unsigned int nBlockSamples)
 {
 	// Initialise Sound Engine
@@ -657,7 +657,7 @@ bool olcConsoleGameEngineOOP::CreateAudio(unsigned int nSampleRate, unsigned int
 	}
 
 	m_bAudioThreadActive = true;
-	m_AudioThread = std::thread(&olcConsoleGameEngineOOP::AudioThread, this);
+	m_AudioThread = std::thread(&ConsoleEngine::AudioThread, this);
 
 	// Start the ball rolling with the sound delivery thread
 	std::unique_lock<std::mutex> lm(m_muxBlockNotZero);
@@ -666,14 +666,14 @@ bool olcConsoleGameEngineOOP::CreateAudio(unsigned int nSampleRate, unsigned int
 }
 
 // Stop and clean up audio system
-bool olcConsoleGameEngineOOP::DestroyAudio()
+bool ConsoleEngine::DestroyAudio()
 {
 	m_bAudioThreadActive = false;
 	return false;
 }
 
 // Handler for soundcard request for more data
-void olcConsoleGameEngineOOP::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2)
+void ConsoleEngine::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2)
 {
 	if (uMsg != WOM_DONE) return;
 	m_nBlockFree++;
@@ -682,16 +682,16 @@ void olcConsoleGameEngineOOP::waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dw
 }
 
 // Static wrapper for sound card handler
-void CALLBACK olcConsoleGameEngineOOP::waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
+void CALLBACK ConsoleEngine::waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 {
-	((olcConsoleGameEngineOOP*)dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
+	((ConsoleEngine*)dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
 }
 
 // Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
 // with audio data. If no requests are available it goes dormant until the sound
 // card is ready for more data. The block is fille by the "user" in some manner
 // and then issued to the soundcard.
-void olcConsoleGameEngineOOP::AudioThread()
+void ConsoleEngine::AudioThread()
 {
 	m_fGlobalTime = 0.0f;
 	float fTimeStep = 1.0f / (float)m_nSampleRate;
@@ -751,13 +751,13 @@ void olcConsoleGameEngineOOP::AudioThread()
 }
 
 // Overridden by user if they want to generate sound in real-time
-float olcConsoleGameEngineOOP::onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep)
+float ConsoleEngine::onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep)
 {
 	return 0.0f;
 }
 
 // Overriden by user if they want to manipulate the sound before it is played
-float olcConsoleGameEngineOOP::onUserSoundFilter(int nChannel, float fGlobalTime, float fSample)
+float ConsoleEngine::onUserSoundFilter(int nChannel, float fGlobalTime, float fSample)
 {
 	return fSample;
 }
@@ -779,7 +779,7 @@ float olcConsoleGameEngineOOP::onUserSoundFilter(int nChannel, float fGlobalTime
 // Finally, before the sound is issued to the operating system for performing, the
 // user gets one final chance to "filter" the sound, perhaps changing the volume
 // or adding funky effects
-float olcConsoleGameEngineOOP::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep)
+float ConsoleEngine::GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep)
 {
 	// Accumulate sample for this channel
 	float fMixerSample = 0.0f;
@@ -807,6 +807,6 @@ float olcConsoleGameEngineOOP::GetMixerOutput(int nChannel, float fGlobalTime, f
 }
 
 
-atomic<bool> olcConsoleGameEngineOOP::m_bAtomActive = false;
-condition_variable olcConsoleGameEngineOOP::m_cvGameFinished;
-mutex olcConsoleGameEngineOOP::m_muxGame;
+atomic<bool> ConsoleEngine::m_bAtomActive = false;
+condition_variable ConsoleEngine::m_cvGameFinished;
+mutex ConsoleEngine::m_muxGame;

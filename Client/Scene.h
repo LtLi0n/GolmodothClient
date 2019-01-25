@@ -15,7 +15,7 @@ class Player;
 class Scene
 {
 public:
-	Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[]);
+	Scene(ConsoleEngine& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[]);
 	~Scene();
 
 	int GetWidth() const { return _width; }
@@ -36,7 +36,7 @@ public:
 	void DownloadPlayers(TcpClient* tcp, bool request);
 
 private:
-	olcConsoleGameEngineOOP* _engine;
+	ConsoleEngine* _engine;
 	int* _tileIds;
 	std::map<const int, Tile*>* _tileInfo;
 

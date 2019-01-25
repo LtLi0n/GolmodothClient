@@ -1,13 +1,13 @@
 #pragma once
 
-#include "olcConsoleGameEngineOOP.h"
+#include "ConsoleEngine.h"
 #include "Vector2.h"
 #include <functional>
 
 class InterfaceObject
 {
 public:
-	InterfaceObject(olcConsoleGameEngineOOP& engine, const int& width, const int& height);
+	InterfaceObject(ConsoleEngine& engine, const int& width, const int& height);
 
 	wchar_t* texture;
 	Vector2 position;
@@ -16,7 +16,7 @@ public:
 	std::function<void()> OnClick;
 
 protected:
-	olcConsoleGameEngineOOP* _engine;
+	ConsoleEngine* _engine;
 	virtual void OnUpdate();
 
 private:

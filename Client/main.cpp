@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <Windows.h>
 
-#include "olcConsoleGameEngineOOP.h"
+#include "ConsoleEngine.h"
 #include "json.hpp"
 
 #include "Player.h"
@@ -17,7 +17,7 @@
 
 using json = nlohmann::json;
 
-class Game : public olcConsoleGameEngineOOP
+class Game : public ConsoleEngine
 {
 public:
 	Player* player;
@@ -28,7 +28,7 @@ public:
 
 	Game()
 	{
-		tcp = new TcpClient("192.168.1.233", 5000);
+		tcp = new TcpClient("127.0.0.1", 5000);
 		tcp->Start();
 
 		player = new Player(*this, tcp);

@@ -180,6 +180,7 @@ enum PIXEL_TYPE
 	PIXEL_QUARTER = 0x2591,
 };
 
+//SPRITE
 class olcSprite
 {
 public:
@@ -350,12 +351,14 @@ public:
 
 };
 
+//-SPRITE
 
-class olcConsoleGameEngineOOP
+
+class ConsoleEngine
 {
 public:
-	olcConsoleGameEngineOOP();
-	~olcConsoleGameEngineOOP();
+	ConsoleEngine();
+	~ConsoleEngine();
 
 public:
 	int ConstructConsole(int width, int height, int fontw, int fonth);

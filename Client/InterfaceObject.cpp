@@ -1,6 +1,6 @@
 #include "InterfaceObject.h"
 
-InterfaceObject::InterfaceObject(olcConsoleGameEngineOOP& engine, const int& width, const int& height)
+InterfaceObject::InterfaceObject(ConsoleEngine& engine, const int& width, const int& height)
 { 
 	_engine = &engine;
 	_width = width;

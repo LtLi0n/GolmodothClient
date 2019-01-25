@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TcpClient.h"
-#include "olcConsoleGameEngineOOP.h"
+#include "ConsoleEngine.h"
 #include "Vector3.h"
 #include "Scene.h"
 
@@ -11,7 +11,7 @@ class Scene;
 class Player
 {
 public:
-	Player(olcConsoleGameEngineOOP& engine, TcpClient* tcp);
+	Player(ConsoleEngine& engine, TcpClient* tcp);
 	Vector3 position;
 	Scene* scene;
 
@@ -20,7 +20,7 @@ public:
 	void DownloadScene(const bool& sendPackets);
 
 private:
-	olcConsoleGameEngineOOP* _engine;
+	ConsoleEngine* _engine;
 	TcpClient* _tcp;
 };
 

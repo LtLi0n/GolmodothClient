@@ -7,7 +7,7 @@
 
 using json = nlohmann::json;
 
-Player::Player(olcConsoleGameEngineOOP& engine, TcpClient* tcp)
+Player::Player(ConsoleEngine& engine, TcpClient* tcp)
 {
 	_engine = &engine;
 	_tcp = tcp;

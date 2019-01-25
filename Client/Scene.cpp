@@ -2,7 +2,7 @@
 
 using json = nlohmann::json;
 
-Scene::Scene(olcConsoleGameEngineOOP& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[])
+Scene::Scene(ConsoleEngine& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[])
 {
 	_engine = &engine;
 	_width = width;
