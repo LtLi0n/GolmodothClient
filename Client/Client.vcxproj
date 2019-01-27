@@ -116,10 +116,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ConsoleEngine.cpp" />
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ConsoleEngine.cpp" />
     <ClCompile Include="OtherPlayer.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -130,10 +130,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="ConsoleEngine.h" />
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
-    <ClInclude Include="ConsoleEngine.h" />
     <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Player.h" />

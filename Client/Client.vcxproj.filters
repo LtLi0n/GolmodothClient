@@ -54,10 +54,10 @@
     <ClCompile Include="OtherPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleEngine.cpp">
+    <ClCompile Include="ConsoleSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleSettings.cpp">
+    <ClCompile Include="ConsoleEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,10 +101,10 @@
     <ClInclude Include="OtherPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleEngine.h">
+    <ClInclude Include="ConsoleSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleSettings.h">
+    <ClInclude Include="ConsoleEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
