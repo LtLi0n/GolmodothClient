@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ConsoleEngine.cpp" />
@@ -129,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ConsoleEngine.h" />

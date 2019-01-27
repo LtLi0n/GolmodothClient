@@ -25,6 +25,9 @@ void Player::Update()
 	//input code
 	if (_engine->IsFocused())
 	{
+		//todo menu later on
+		if (_engine->GetKey(0x1B).bPressed) exit(0);
+
 		//NORTH
 		if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
 		{

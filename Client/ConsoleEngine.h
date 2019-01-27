@@ -135,6 +135,8 @@ using namespace std;
 
 #include <windows.h>
 
+//-custom includes
+#include "ConsoleSettings.h"
 
 enum COLOUR
 {
@@ -325,10 +327,6 @@ public:
 		char* res_data = (char*)LockResource(res_handle);
 		DWORD res_size = SizeofResource(NULL, res);
 
-
-		
-
-
 		istringstream iss(res_data);
 		istream *is = &iss;
 		
@@ -361,7 +359,7 @@ public:
 	~ConsoleEngine();
 
 public:
-	int ConstructConsole(int width, int height, int fontw, int fonth);
+	int ConstructConsole(const ConsoleSettings& settings);
 	void Start();
 	
 public:
@@ -390,13 +388,10 @@ protected:
 	// Optional for clean up 
 	virtual bool OnUserDestroy();
 
-
 	int Error(const wchar_t *msg);
 	static BOOL CloseHandler(DWORD evt);
 
 protected:
-
-
 	struct sKeyState
 	{
 		bool bPressed;
@@ -419,10 +414,7 @@ protected:
 	class olcAudioSample
 	{
 	public:
-		olcAudioSample()
-		{
-
-		}
+		olcAudioSample() { }
 
 		olcAudioSample(std::wstring sWavFile)
 		{

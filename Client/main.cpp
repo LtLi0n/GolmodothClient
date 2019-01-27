@@ -17,6 +17,9 @@
 
 using json = nlohmann::json;
 
+#define RENDER_WIDTH 75
+#define RENDER_HEIGHT 35
+
 class Game : public ConsoleEngine
 {
 public:
@@ -58,6 +61,8 @@ int main()
 {	
 	Game game;
 
-	game.ConstructConsole(4 * 31, 2 * 25, 9, 15);
-	game.Start();
+	ConsoleSettings cs(RENDER_WIDTH, RENDER_HEIGHT, 9, 15);
+
+	if (game.ConstructConsole(cs) == 1) game.Start();
+	else system("pause");
 }

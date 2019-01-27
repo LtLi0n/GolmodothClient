@@ -49,13 +49,13 @@ ConsoleEngine::~ConsoleEngine()
 	delete[] m_bufScreen;
 }
 
-int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
+int ConsoleEngine::ConstructConsole(const ConsoleSettings& settings)
 {
 	if (m_hConsole == INVALID_HANDLE_VALUE)
 		return Error(L"Bad Handle");
 
-	m_nScreenWidth = width;
-	m_nScreenHeight = height;
+	m_nScreenWidth = settings.render_width;
+	m_nScreenHeight = settings.render_height;
 
 	// Update 13/09/2017 - It seems that the console behaves differently on some systems
 	// and I'm unsure why this is. It could be to do with windows default settings, or
@@ -74,6 +74,15 @@ int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
 	m_rectWindow = { 0, 0, 1, 1 };
 	SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow);
 
+	// Set fullscreen
+	if (settings.fullscreen)
+	{
+		if (!SetConsoleDisplayMode(m_hConsole, CONSOLE_FULLSCREEN_MODE | WS_CHILD | WS_VISIBLE, NULL))
+		{
+			return Error(L"SetConsoleDisplayMode");
+		}
+	}
+
 	// Set the size of the screen buffer
 	COORD coord = { (short)m_nScreenWidth, (short)m_nScreenHeight };
 	if (!SetConsoleScreenBufferSize(m_hConsole, coord))
@@ -87,8 +96,8 @@ int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
 	cfi.nFont = 0;
-	cfi.dwFontSize.X = fontw;
-	cfi.dwFontSize.Y = fonth;
+	cfi.dwFontSize.X = settings.font_width;
+	cfi.dwFontSize.Y = settings.font_height;
 	cfi.FontFamily = FF_DONTCARE;
 	cfi.FontWeight = FW_NORMAL;
 	//wcscpy_s(cfi.FaceName, L"Lucida Console");
@@ -137,9 +146,14 @@ void ConsoleEngine::Fill(int x1, int y1, int x2, int y2, wchar_t c, short col)
 {
 	Clip(x1, y1);
 	Clip(x2, y2);
+
 	for (int x = x1; x < x2; x++)
+	{
 		for (int y = y1; y < y2; y++)
+		{
 			Draw(x, y, c, col);
+		}
+	}
 }
 
 void ConsoleEngine::DrawString(int x, int y, wstring c, short col)
@@ -195,14 +209,14 @@ void ConsoleEngine::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short co
 			xe = x1;
 		}
 		Draw(x, y, c, col);
-		for (i = 0; x<xe; i++)
+		for (i = 0; x < xe; i++)
 		{
 			x = x + 1;
-			if (px<0)
+			if (px < 0)
 				px = px + 2 * dy1;
 			else
 			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0))
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
 					y = y + 1;
 				else
 					y = y - 1;
@@ -226,14 +240,14 @@ void ConsoleEngine::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short co
 			ye = y1;
 		}
 		Draw(x, y, c, col);
-		for (i = 0; y<ye; i++)
+		for (i = 0; y < ye; i++)
 		{
 			y = y + 1;
 			if (py <= 0)
 				py = py + 2 * dx1;
 			else
 			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0))
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
 					x = x + 1;
 				else
 					x = x - 1;
