@@ -31,6 +31,7 @@ public:
 
 	Game()
 	{
+
 		tcp = new TcpClient("192.168.1.233", 5000);
 		tcp->Start();
 
@@ -61,8 +62,8 @@ int main()
 {	
 	Game game;
 
-	//ConsoleSettings cs(RENDER_WIDTH, RENDER_HEIGHT, 9, 15);
+	ConsoleSettings cs(9, 15);
 
-	if (game.ConstructConsole(100, 50, 9, 15) == 1) game.Start();
+	if (game.ConstructConsole(cs) == 1) game.Start();
 	else system("pause");
 }

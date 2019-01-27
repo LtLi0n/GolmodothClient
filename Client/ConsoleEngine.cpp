@@ -521,6 +521,8 @@ HWND ConsoleEngine::ConstructWindow(int width, int height)
 
 ConsoleEngine::ConsoleEngine()
 {
+	_startInFullscreen = false;
+
 	m_nScreenWidth = 80;
 	m_nScreenHeight = 30;
 
@@ -556,16 +558,18 @@ void ConsoleEngine::EnableSound()
 	m_bEnableSound = true;
 }
 
-int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
+int ConsoleEngine::ConstructConsole(const ConsoleSettings& cs)
 {
-	m_nScreenWidth = width;
-	m_nScreenHeight = height;
+	m_nScreenWidth = cs.render_width;
+	m_nScreenHeight = cs.render_height;
 
-	m_nFontWidth = fontw;
-	m_nFontHeight = fonth;
+	m_nFontWidth = cs.font_width;
+	m_nFontHeight = cs.font_height;
 
-	int newWndWidth = width * fontw;
-	int newWndHeight = height * fonth;
+	_startInFullscreen = cs.fullscreen;
+
+	int newWndWidth = m_nScreenWidth * m_nFontWidth;
+	int newWndHeight = m_nScreenHeight * m_nFontHeight;
 
 	if (m_hWnd && ((m_nWindowWidth != newWndWidth) || (m_nWindowHeight != newWndHeight)))
 	{
@@ -587,6 +591,7 @@ int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
 	memset(m_bufMemory, 0, bufLen * 200);
 
 	for (int y = 0; y < m_nScreenHeight; y++)
+	{
 		for (int x = 0; x < m_nScreenWidth; x++)
 		{
 			int pos = y * m_nScreenWidth + x;
@@ -624,6 +629,7 @@ int ConsoleEngine::ConstructConsole(int width, int height, int fontw, int fonth)
 			m_uIndicesArray[pos + 10] = pos + 10;
 			m_uIndicesArray[pos + 11] = pos + 11;
 		}
+	}
 
 	return 1;
 }
@@ -1079,6 +1085,8 @@ void ConsoleEngine::Start()
 		Error(L"Could not create GL window");
 		return;
 	}
+
+	if (_startInFullscreen) ToggleFullscreen(m_hWnd);
 
 	glGenTextures(1, &m_uFontTexture);
 	glBindTexture(GL_TEXTURE_2D, m_uFontTexture);

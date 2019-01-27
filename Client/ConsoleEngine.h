@@ -132,6 +132,8 @@ using namespace std;
 typedef BOOL(WINAPI wglSwapInterval_t) (int interval);
 
 
+#include "ConsoleSettings.h"
+
 enum COLOUR
 {
 	FG_BLACK = 0x0000,
@@ -338,6 +340,7 @@ class ConsoleEngine
 
 	void UpdateMousePosition(int x, int y);
 	void ToggleFullscreen(HWND hWnd);
+	bool _startInFullscreen;
 	void WindowResize(void);
 	void WindowUpdateScale(void);
 	int SetPixelFormatGL(void);
@@ -346,7 +349,7 @@ class ConsoleEngine
 	
 public:
 	ConsoleEngine();
-	int ConstructConsole(int width, int height, int fontw, int fonth);
+	int ConstructConsole(const ConsoleSettings& cs);
 	virtual void Draw(int x, int y, wchar_t c = 0x2588, short col = 0x000F);
 	void Fill(int x1, int y1, int x2, int y2, wchar_t c = 0x2588, short col = 0x000F);
 	void DrawString(int x, int y, wstring c, short col = 0x000F);

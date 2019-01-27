@@ -1,7 +1,7 @@
 #include "Button.h"
 
 
-Button::Button(ConsoleEngine& engine, const int& widht, const int& height) : InterfaceObject(engine, widht, height)
+Button::Button(ConsoleEngine& engine, const int& width, const int& height) : InterfaceObject(engine, width, height)
 {
 
 }

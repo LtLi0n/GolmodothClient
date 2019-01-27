@@ -9,19 +9,23 @@ class InterfaceObject
 public:
 	InterfaceObject(ConsoleEngine& engine, const int& width, const int& height);
 
-	wchar_t* texture;
+	const wchar_t* texture;
 	Vector2 position;
 	bool MouseOver() const;
 	void Update();
+	virtual void Render();
+
+	int width;
+	int height;
+
 	std::function<void()> OnClick;
+	std::function<void(ConsoleEngine& engine, InterfaceObject& obj)> OnRender;
 
 protected:
 	ConsoleEngine* _engine;
 	virtual void OnUpdate();
 
 private:
-	int _width;
-	int _height;
 	bool _mouseOver;
 
 	void _InternalUpdate();

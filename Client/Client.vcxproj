@@ -120,6 +120,7 @@
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="OtherPlayer.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Player.h" />
