@@ -82,6 +82,7 @@ http://www.twitch.tv/javidx9
 */
 
 #include "ConsoleEngine.h"
+#include "Windowsx.h"
 
 wglSwapInterval_t *wglSwapInterval;
 
@@ -445,6 +446,12 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 	case WM_MOUSEMOVE:
 		cge->UpdateMousePosition(LOWORD(lParam), HIWORD(lParam));
+		return 0;
+
+	case WM_MOUSEWHEEL:
+		cge->mouseWheelRotation += (((short)HIWORD(wParam)) / 120.0);
+		//xPos = LOWORD(lParam); 
+		//yPos = HIWORD(lParam);
 		return 0;
 
 	case WM_SIZE:

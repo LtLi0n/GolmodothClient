@@ -35,7 +35,7 @@ public:
 		tcp = new TcpClient("192.168.1.233", 5000);
 		tcp->Start();
 
-		player = new Player(*this, tcp);
+		player = new Player(this, tcp);
 		player->DownloadScene(true);
 	}
 

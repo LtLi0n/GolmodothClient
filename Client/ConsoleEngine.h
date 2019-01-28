@@ -406,7 +406,7 @@ public:
 	int GetMouseY() { return m_mousePosY; }
 	sKeyState GetMouse(int nMouseButtonID) { return m_mouse[nMouseButtonID]; }
 	bool IsFocused() { return m_bConsoleInFocus; }
-
+	double mouseWheelRotation;
 
 protected:
 	int Error(const wchar_t *msg);

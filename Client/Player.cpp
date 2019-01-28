@@ -7,13 +7,15 @@
 
 using json = nlohmann::json;
 
-Player::Player(ConsoleEngine& engine, TcpClient* tcp)
+Player::Player(ConsoleEngine* engine, TcpClient* tcp)
 {
-	_engine = &engine;
+	_engine = engine;
 	_tcp = tcp;
 
 	_menu = new Menu(engine, *this);
 	_isInMenu = false;
+
+	chat = new Chat(_engine);
 }
 
 void Player::Update()
@@ -35,6 +37,14 @@ void Player::Update()
 
 		if(!_isInMenu)
 		{
+			if (_engine->GetKey(VK_RETURN).bPressed)
+			{
+				auto chrono_time = std::chrono::system_clock::now();
+				time_t time = std::chrono::system_clock::to_time_t(chrono_time);
+
+				chat->AddMessage(Message(L"LtLi0n", time, L"test_manual"));
+			}
+
 			//NORTH
 			if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
 			{
@@ -153,6 +163,9 @@ void Player::Update()
 	}
 
 	scene->Update(_tcp, *this);
+
+	chat->Update();
+	chat->Render();
 
 	if (_isInMenu)
 	{

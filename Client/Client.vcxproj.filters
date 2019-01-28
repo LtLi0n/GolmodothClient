@@ -22,6 +22,12 @@
     <Filter Include="Header Files\Interface">
       <UniqueIdentifier>{14d01ac1-3da0-482d-a455-c66da337cbea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{d0d16c76-78dd-4070-b1b3-393901150fab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{16a934b1-8762-4642-b631-e2725ecab4a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,13 +51,7 @@
     <ClCompile Include="TcpClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TransportTile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OtherPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleSettings.cpp">
@@ -60,8 +60,20 @@
     <ClCompile Include="ConsoleEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Chat.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="OtherPlayer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
     <ClCompile Include="Menu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +101,6 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TcpClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -101,17 +110,26 @@
     <ClInclude Include="TransportTile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OtherPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ConsoleSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OtherPlayer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClient.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Chat.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
     <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

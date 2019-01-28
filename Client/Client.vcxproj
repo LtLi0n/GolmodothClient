@@ -116,11 +116,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="ConsoleEngine.cpp" />
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="OtherPlayer.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -131,11 +133,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Chat.h" />
     <ClInclude Include="ConsoleEngine.h" />
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Message.h" />
     <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Player.h" />

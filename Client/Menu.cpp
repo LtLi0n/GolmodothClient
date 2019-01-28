@@ -1,26 +1,26 @@
 ﻿#include "Menu.h"
 
-void RenderResumeButton(ConsoleEngine& engine, InterfaceObject& obj)
+void RenderResumeButton(ConsoleEngine* engine, InterfaceObject* obj)
 {
-	engine.DrawString(
-		obj.position.x, 
-		obj.position.y + 1, 
-		obj.MouseOver() ? L"       → Resume ←       " : L"         Resume         ", 
-		BG_BLACK + obj.MouseOver() ? FG_GREEN : FG_DARK_GREEN);
+	engine->DrawString(
+		obj->position.x,
+		obj->position.y + 1,
+		obj->MouseOver() ? L"       → Resume ←       " : L"         Resume         ",
+		BG_BLACK + obj->MouseOver() ? FG_GREEN : FG_DARK_GREEN);
 }
 
-void RenderExitButton(ConsoleEngine& engine, InterfaceObject& obj)
+void RenderExitButton(ConsoleEngine* engine, InterfaceObject* obj)
 {
-	engine.DrawString(
-		obj.position.x,
-		obj.position.y + 1,
-		obj.MouseOver() ? L"        → Exit ←        " : L"          Exit          ",
-		BG_BLACK + obj.MouseOver() ? FG_GREEN : FG_DARK_GREEN);
+	engine->DrawString(
+		obj->position.x,
+		obj->position.y + 1,
+		obj->MouseOver() ? L"        → Exit ←        " : L"          Exit          ",
+		BG_BLACK + obj->MouseOver() ? FG_GREEN : FG_DARK_GREEN);
 }
 
-Menu::Menu(ConsoleEngine& engine, Player& player)
+Menu::Menu(ConsoleEngine* engine, Player& player)
 {
-	_engine = &engine;
+	_engine = engine;
 	_player = &player;
 
 	_button_resume = new Button(engine, 24, 3);

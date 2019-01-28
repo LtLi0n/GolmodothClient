@@ -1,8 +1,8 @@
 #include "InterfaceObject.h"
 
-InterfaceObject::InterfaceObject(ConsoleEngine& engine, const int& width, const int& height)
+InterfaceObject::InterfaceObject(ConsoleEngine* engine, const int& width, const int& height)
 { 
-	_engine = &engine;
+	_engine = engine;
 	this->width = width;
 	this->height = height;
 	texture = new wchar_t[width * height];
@@ -31,7 +31,7 @@ void InterfaceObject::Render()
 	}
 	else
 	{
-		OnRender(*_engine, *this);
+		OnRender(_engine, this);
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "Vector3.h"
 #include "Scene.h"
 #include "Menu.h"
+#include "Chat.h"
 
 class TcpClient;
 class Scene;
@@ -13,9 +14,10 @@ class Menu;
 class Player
 {
 public:
-	Player(ConsoleEngine& engine, TcpClient* tcp);
+	Player(ConsoleEngine* engine, TcpClient* tcp);
 	Vector3 position;
 	Scene* scene;
+	Chat* chat;
 
 	void Update();
 
