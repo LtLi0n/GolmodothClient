@@ -39,109 +39,110 @@ void Player::Update()
 		{
 			if (_engine->GetKey(VK_RETURN).bPressed)
 			{
-				auto chrono_time = std::chrono::system_clock::now();
-				time_t time = std::chrono::system_clock::to_time_t(chrono_time);
-
-				chat->AddMessage(Message(L"LtLi0n", time, L"test_manual"));
+				if (chat->InputMode()) chat->ExitInputMode(true);
+				else chat->EnterInputMode();
 			}
 
-			//NORTH
-			if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
+			if (!chat->InputMode())
 			{
-				bool skip = false;
-
-				//change scenes
-				if (isOnTransport)
+				//NORTH
+				if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
 				{
-					if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_NORTH)
+					bool skip = false;
+
+					//change scenes
+					if (isOnTransport)
 					{
-						transport_request = true;
-						skip = true;
+						if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_NORTH)
+						{
+							transport_request = true;
+							skip = true;
+						}
+					}
+
+					//move north
+					if (!skip && position.y > 0)
+					{
+						if (scene->GetTileInfo(position.x, position.y - 1)->Walkable())
+						{
+							position.y--;
+							position_change = true;
+						}
 					}
 				}
-
-				//move north
-				if (!skip && position.y > 0)
+				//EAST
+				else if (_engine->GetKey(VK_RIGHT).bPressed || _engine->GetKey(0x44).bPressed)
 				{
-					if (scene->GetTileInfo(position.x, position.y - 1)->Walkable())
+					bool skip = false;
+
+					//change scenes
+					if (isOnTransport)
 					{
-						position.y--;
-						position_change = true;
+						if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_EAST)
+						{
+							transport_request = true;
+							skip = true;
+						}
+					}
+
+					//move east
+					if (!skip && scene->GetWidth() - 1 > position.x)
+					{
+						if (scene->GetTileInfo(position.x + 1, position.y)->Walkable())
+						{
+							position.x++;
+							position_change = true;
+						}
 					}
 				}
-			}
-			//EAST
-			else if (_engine->GetKey(VK_RIGHT).bPressed || _engine->GetKey(0x44).bPressed)
-			{
-				bool skip = false;
-
-				//change scenes
-				if (isOnTransport)
+				//SOUTH
+				else if (_engine->GetKey(VK_DOWN).bPressed || _engine->GetKey(0x53).bPressed)
 				{
-					if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_EAST)
+					bool skip = false;
+
+					//change scenes
+					if (isOnTransport)
 					{
-						transport_request = true;
-						skip = true;
+						if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_SOUTH)
+						{
+							transport_request = true;
+							skip = true;
+						}
+					}
+
+					//move south
+					if (!skip && scene->GetHeight() - 1 > position.y)
+					{
+						if (scene->GetTileInfo(position.x, position.y + 1)->Walkable())
+						{
+							position.y++;
+							position_change = true;
+						}
 					}
 				}
-
-				//move east
-				if (!skip && scene->GetWidth() - 1 > position.x)
+				//WEST
+				else if ((_engine->GetKey(VK_LEFT).bPressed || _engine->GetKey(0x41).bPressed))
 				{
-					if (scene->GetTileInfo(position.x + 1, position.y)->Walkable())
+					bool skip = false;
+
+					//change scenes
+					if (isOnTransport)
 					{
-						position.x++;
-						position_change = true;
+						if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_WEST)
+						{
+							transport_request = true;
+							skip = true;
+						}
 					}
-				}
-			}
-			//SOUTH
-			else if (_engine->GetKey(VK_DOWN).bPressed || _engine->GetKey(0x53).bPressed)
-			{
-				bool skip = false;
 
-				//change scenes
-				if (isOnTransport)
-				{
-					if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_SOUTH)
+					//move west
+					if (!skip && position.x > 0)
 					{
-						transport_request = true;
-						skip = true;
-					}
-				}
-
-				//move south
-				if (!skip && scene->GetHeight() - 1 > position.y)
-				{
-					if (scene->GetTileInfo(position.x, position.y + 1)->Walkable())
-					{
-						position.y++;
-						position_change = true;
-					}
-				}
-			}
-			//WEST
-			else if ((_engine->GetKey(VK_LEFT).bPressed || _engine->GetKey(0x41).bPressed))
-			{
-				bool skip = false;
-
-				//change scenes
-				if (isOnTransport)
-				{
-					if (scene->transport[position.y * scene->GetWidth() + position.x]->GetDirection() == TRANSPORT_WEST)
-					{
-						transport_request = true;
-						skip = true;
-					}
-				}
-
-				//move west
-				if (!skip && position.x > 0)
-				{
-					if (scene->GetTileInfo(position.x - 1, position.y)->Walkable())
-					{
-						position.x--;
-						position_change = true;
+						if (scene->GetTileInfo(position.x - 1, position.y)->Walkable())
+						{
+							position.x--;
+							position_change = true;
+						}
 					}
 				}
 			}

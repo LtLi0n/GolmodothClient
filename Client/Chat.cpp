@@ -5,20 +5,9 @@ Chat::Chat(ConsoleEngine* engine)
 {
 	_engine = engine;
 	_off_i = 0;
-	width = 40;
-	height = 15;
-
-	auto chrono_time = std::chrono::system_clock::now();
-	time_t time = std::chrono::system_clock::to_time_t(chrono_time);
-
-	for (int i = 0; i < 5; i++)
-	{
-		AddMessage(Message(L"LtLi0n", time, L"test1"));
-		AddMessage(Message(L"LtLi0n", time, L"test2"));
-		AddMessage(Message(L"mild assburger", time, L"test3"));
-		AddMessage(Message(L"LtLi0n", time, L"test4"));
-		AddMessage(Message(L"LtLi0n", time, L"test5"));
-	}
+	width = 20;
+	height = 7;
+	_inputMode = false;
 }
 
 void Chat::AddMessage(const Message& message)
@@ -29,6 +18,8 @@ void Chat::AddMessage(const Message& message)
 
 void Chat::Update()
 {
+	width = _engine->ScreenWidth() - 2;
+
 	if (_engine->mouseWheelRotation != 0)
 	{
 		int tmp_off_i = _off_i + (_engine->mouseWheelRotation > 0 ? -1 : 1);
@@ -41,6 +32,62 @@ void Chat::Update()
 
 		_engine->mouseWheelRotation = 0;
 	}
+
+	//redo entirely later
+	if (_inputMode)
+	{
+		bool inputRegistered = false;
+
+		//decimal
+		for (int i = 0x30; i <= 0x39; i++)
+		{
+			if (_engine->m_keys[i].bPressed)
+			{
+				_input += i;
+				inputRegistered = true;
+			}
+		}
+
+		//alphabet
+		for (int i = 0x41; i <= 0x5A; i++)
+		{
+			if (_engine->m_keys[i].bPressed)
+			{
+				_input += _engine->m_keys[VK_SHIFT].bHeld || (GetKeyState(VK_CAPITAL) & 0x0001) != 0 ? i : i + 32;
+				inputRegistered = true;
+			}
+		}
+
+		//this is some slow and painful erasing. todo later on
+		if (_engine->m_keys[VK_BACK].bPressed && _input.size() > 0)
+		{
+			_input = _input.erase(_input.size() - 1, 1);
+			inputRegistered = true;
+		}
+
+		if (_engine->m_keys[VK_SPACE].bPressed)
+		{
+			_input = _input += L' ';
+			inputRegistered = true;
+		}
+
+		if (_engine->m_keys[VK_OEM_COMMA].bPressed)
+		{
+			_input += L',';
+			inputRegistered;
+		}
+
+		if (_engine->m_keys[VK_OEM_PERIOD].bPressed)
+		{
+			_input += L'.';
+			inputRegistered;
+		}
+
+		if (inputRegistered)
+		{
+			_last_blink = std::chrono::system_clock::now();
+		}
+	}
 }
 
 void Chat::Render()
@@ -49,8 +96,10 @@ void Chat::Render()
 
 	_engine->Fill(0, chat_y - 2, width + 3, chat_y + height, L' ', FG_BLACK);
 
+	int offY = 0;
+
 	//display messages
-	for (int y = 0; y < height; y++)
+	for (int y = 0; y + offY < height; y++)
 	{
 		int off_ii = _off_i + y;
 		if (off_ii == _messages.size()) break;
@@ -64,30 +113,83 @@ void Chat::Render()
 		wstring time_str = L'[' + (time_converted->tm_hour < 10 ? (L"0" + to_wstring(time_converted->tm_hour)) : to_wstring(time_converted->tm_hour)) +
 			L':' + (time_converted->tm_min < 10 ? (L"0" + to_wstring(time_converted->tm_min)) : to_wstring(time_converted->tm_min)) + L']';
 
-		_engine->DrawString(1, chat_y + y, time_str, FG_DARK_GREY);
-		_engine->DrawString(9, chat_y + y, _messages[off_ii].Author() + L':', FG_RED);
-		_engine->DrawString(11 + author_l, chat_y + y, _messages[off_ii].Content().substr(0, width - (11 + author_l)), FG_GREY);
+		wstring content = _messages[off_ii].Content();
+
+		//render message
+		_engine->DrawString(1, chat_y + y + offY, time_str, FG_DARK_GREY);
+		_engine->DrawString(9, chat_y + y + offY, _messages[off_ii].Author() + L':', FG_RED);
+		for (int ln = 0; content.size() > 0; ln++)
+		{
+			wstring output = ln == 0 ? content.substr(0, width - (11 + author_l)) : content.substr(0, width);
+			content = content.erase(0, ln == 0 ? width - (11 + author_l) : width);
+
+			if (ln > 0) offY++;
+			if (y + offY >= height) break;
+
+			_engine->DrawString(ln == 0 ? (11 + author_l) : 1, chat_y + y + offY, output, FG_GREY);
+		}
 	}
 
-	int max_vertical = _messages.size() - height;
-	double closest_value = 999;
-	int closest_at_y = 0;
-
-	int vertical_bar_pos = _messages.size() - (_off_i + height);
-	if (vertical_bar_pos < 0) vertical_bar_pos = 0;
-
-	for (int y = 0; y < height + 1; y++)
+	//scrollbar
 	{
-		double delta = abs((max_vertical * (y + 1)) / (height + 1)  - vertical_bar_pos);
+		int max_vertical = _messages.size() - height;
+		double closest_value = 999;
+		int closest_at_y = 0;
 
-		if (delta < closest_value)
+		int vertical_bar_pos = _messages.size() - (_off_i + height);
+		if (vertical_bar_pos < 0) vertical_bar_pos = 0;
+
+		for (int y = 0; y < height + 1; y++)
 		{
-			closest_at_y = y;
-			closest_value = delta;
+			double delta = abs((max_vertical * (y + 1)) / (height + 1) - vertical_bar_pos);
+
+			if (delta < closest_value)
+			{
+				closest_at_y = y;
+				closest_value = delta;
+			}
+
+			_engine->Draw(width + 1, chat_y + y - 1, L'|', FG_WHITE);
 		}
 
-		_engine->Draw(width + 1, chat_y + y - 1, L'|', FG_WHITE);
+		_engine->Draw(width + 1, chat_y + height - closest_at_y - 1, L'O', FG_WHITE);
 	}
 
-	_engine->Draw(width + 1, chat_y + height - closest_at_y - 1, L'O', FG_WHITE);
+	if (_inputMode)
+	{
+		_engine->DrawString(1, chat_y + height + 3, _input.size() > width ? _input.substr(_input.size() - width) : _input , FG_GREY);
+
+		auto current = std::chrono::system_clock::now();
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _last_blink);
+
+		if (ms.count() < 500)
+		{
+			_engine->Draw(1 + (_input.size() > width ? width : _input.size()), chat_y + height + 3, L'│', FG_WHITE);
+		}
+		else if (ms.count() >= 1000)
+		{
+			_last_blink = std::chrono::system_clock::now();
+		}
+	}
+
+}
+
+void Chat::EnterInputMode()
+{
+	_input.clear();
+	_last_blink = std::chrono::system_clock::now();
+	_inputMode = true;
+}
+
+void Chat::ExitInputMode(const bool& sendInput)
+{
+	if (_input.size() > 0 && sendInput)
+	{
+		auto chrono_time = std::chrono::system_clock::now();
+		time_t time = std::chrono::system_clock::to_time_t(chrono_time);
+		AddMessage(Message(L"LtLi0n", time, _input));
+	}
+
+	_input.clear();
+	_inputMode = false;
 }

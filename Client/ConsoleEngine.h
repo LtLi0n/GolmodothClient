@@ -388,8 +388,6 @@ public:
 		return true;
 	}
 
-
-protected:
 	struct sKeyState
 	{
 		bool bPressed;
