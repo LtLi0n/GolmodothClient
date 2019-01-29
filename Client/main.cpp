@@ -23,20 +23,15 @@ using json = nlohmann::json;
 class Game : public ConsoleEngine
 {
 public:
-	Player* player;
+	Player player;
+	TcpClient tcp;
 
-	Scene* city;
-	Scene* outdoors;
-	TcpClient* tcp;
-
-	Game()
+	Game() : 
+		tcp("192.168.1.233", 5000),
+		player(*this, tcp)
 	{
-
-		tcp = new TcpClient("192.168.1.233", 5000);
-		tcp->Start();
-
-		player = new Player(this, tcp);
-		player->DownloadScene(true);
+		tcp.Start();
+		player.DownloadScene(true);
 	}
 
 protected:
@@ -52,7 +47,7 @@ protected:
 	{
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), U' ');
 
-		player->Update();
+		player.Update();
 
 		return true;
 	}

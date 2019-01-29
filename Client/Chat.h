@@ -9,7 +9,7 @@
 class Chat
 {
 public:
-	Chat(ConsoleEngine* engine);
+	Chat(ConsoleEngine& engine);
 
 	void AddMessage(const Message& message);
 	void Update();
@@ -18,13 +18,13 @@ public:
 	int width;
 	int height;
 
-	bool InputMode() const { return _engine->keyboard.receive_input; }
+	bool InputMode() const { return _engine.keyboard.receive_input; }
 	void EnterInputMode();
 	void ExitInputMode(const bool& sendInput);
 
 private:
 	int _off_i;
 	std::vector<Message> _messages;
-	ConsoleEngine* _engine;
+	ConsoleEngine& _engine;
 };
 

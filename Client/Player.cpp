@@ -7,9 +7,8 @@
 
 using json = nlohmann::json;
 
-Player::Player(ConsoleEngine* engine, TcpClient* tcp)
+Player::Player(ConsoleEngine& engine, TcpClient& tcp) : _engine(engine), _tcp(tcp)
 {
-	_engine = engine;
 	_tcp = tcp;
 
 	_menu = new Menu(engine, *this);
@@ -28,16 +27,16 @@ void Player::Update()
 	bool transport_request = false;
 
 	//input code
-	if (_engine->IsFocused())
+	if (_engine.IsFocused())
 	{
-		if (_engine->GetKey(VK_ESCAPE).bPressed)
+		if (_engine.GetKey(VK_ESCAPE).bPressed)
 		{
 			_isInMenu = !_isInMenu;
 		}
 
 		if(!_isInMenu)
 		{
-			if (_engine->GetKey(VK_RETURN).bPressed)
+			if (_engine.GetKey(VK_RETURN).bPressed)
 			{
 				if (chat->InputMode()) chat->ExitInputMode(true);
 				else chat->EnterInputMode();
@@ -46,7 +45,7 @@ void Player::Update()
 			if (!chat->InputMode())
 			{
 				//NORTH
-				if ((_engine->GetKey(VK_UP).bPressed || _engine->GetKey(0x57).bPressed))
+				if ((_engine.GetKey(VK_UP).bPressed || _engine.GetKey(0x57).bPressed))
 				{
 					bool skip = false;
 
@@ -71,7 +70,7 @@ void Player::Update()
 					}
 				}
 				//EAST
-				else if (_engine->GetKey(VK_RIGHT).bPressed || _engine->GetKey(0x44).bPressed)
+				else if (_engine.GetKey(VK_RIGHT).bPressed || _engine.GetKey(0x44).bPressed)
 				{
 					bool skip = false;
 
@@ -96,7 +95,7 @@ void Player::Update()
 					}
 				}
 				//SOUTH
-				else if (_engine->GetKey(VK_DOWN).bPressed || _engine->GetKey(0x53).bPressed)
+				else if (_engine.GetKey(VK_DOWN).bPressed || _engine.GetKey(0x53).bPressed)
 				{
 					bool skip = false;
 
@@ -121,7 +120,7 @@ void Player::Update()
 					}
 				}
 				//WEST
-				else if ((_engine->GetKey(VK_LEFT).bPressed || _engine->GetKey(0x41).bPressed))
+				else if ((_engine.GetKey(VK_LEFT).bPressed || _engine.GetKey(0x41).bPressed))
 				{
 					bool skip = false;
 
@@ -152,12 +151,12 @@ void Player::Update()
 				Packet pos_update = Packet(PACKET_SEND);
 				std::string content = "map.sync->position\nx: " + std::to_string(position.x) + "\ny: " + std::to_string(position.y);
 				pos_update.content = content.c_str();
-				_tcp->Send(pos_update);
+				_tcp.Send(pos_update);
 			}
 
 			if (transport_request)
 			{
-				_tcp->SendRequest("map.request->transport\n");
+				_tcp.SendRequest("map.request->transport\n");
 				DownloadScene(false);
 			}
 		}
@@ -178,15 +177,15 @@ void Player::DownloadScene(const bool& sendPackets)
 {
 	if (sendPackets)
 	{
-		_tcp->SendRequest("map.request->tile_info\n");
-		_tcp->SendRequest("map.request->tiles\n");
-		_tcp->SendRequest("map.request->transport_nodes\n");
+		_tcp.SendRequest("map.request->tile_info\n");
+		_tcp.SendRequest("map.request->tiles\n");
+		_tcp.SendRequest("map.request->transport_nodes\n");
 	}
 
-	std::map<const int, Tile*>* tile_info = new std::map<const int, Tile*>();
+	std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tile_info = std::make_shared<std::map<const int, std::shared_ptr<Tile>>>();
 
 	//load tile info of the scene
-	const Packet* response_tileInfo = _tcp->WaitHeader("map.request->tile_info");
+	std::shared_ptr<Packet> response_tileInfo = _tcp.WaitHeader("map.request->tile_info");
 	{	
 		json json = json::parse(response_tileInfo->content + 23);
 
@@ -194,14 +193,12 @@ void Player::DownloadScene(const bool& sendPackets)
 
 		for (int i = 0; i < json.size(); i++)
 		{
-			(*tile_info)[json[i]["id"].get<const int>()] =
-				new Tile(
+			(*tile_info)[json[i]["id"].get<const int>()] = std::make_shared<Tile>(
 					converter.from_bytes(json[i]["display"].get<std::string>()),
 					json[i]["color"].get<short>(),
 					json[i]["walkable"].get<bool>(),
 					converter.from_bytes(json[i]["connection_horizontal"].get<std::string>()),
-					converter.from_bytes(json[i]["connection_vertical"].get<std::string>())
-				);
+					converter.from_bytes(json[i]["connection_vertical"].get<std::string>()));
 		}
 	}
 
@@ -209,7 +206,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	int map_size_x, map_size_y;
 
 	//load corresponding tile ids of the scene
-	const Packet* response_tiles = _tcp->WaitHeader("map.request->tiles");
+	std::shared_ptr<Packet> response_tiles = _tcp.WaitHeader("map.request->tiles");
 	{
 		std::string map_size_x_str;
 		std::string map_size_y_str;
@@ -277,11 +274,14 @@ void Player::DownloadScene(const bool& sendPackets)
 		}
 	}
 
-	delete scene;
-	scene = new Scene(*_engine, map_size_x, map_size_y, tile_info, tiles);
+	//----old code
+	//delete scene;
+	//scene = new Scene(_engine, map_size_x, map_size_y, tile_info, tiles);
+
+	scene = std::make_unique<Scene>(_engine, map_size_x, map_size_y, tile_info, tiles);
 
 	//load transport tiles
-	const Packet* response_transportNodes = _tcp->WaitHeader("map.request->transport_nodes");
+	std::shared_ptr<Packet> response_transportNodes = _tcp.WaitHeader("map.request->transport_nodes");
 	{
 		json json = json::parse(response_transportNodes->content + 29);
 
@@ -295,9 +295,9 @@ void Player::DownloadScene(const bool& sendPackets)
 
 	scene->DownloadPlayers(_tcp, true);
 
-	_tcp->DeletePacket(response_tileInfo);
-	_tcp->DeletePacket(response_tiles);
-	_tcp->DeletePacket(response_transportNodes);
+	_tcp.DeletePacket(response_tileInfo);
+	_tcp.DeletePacket(response_tiles);
+	_tcp.DeletePacket(response_transportNodes);
 }
 
 void Player::ToggleMenu(bool on)

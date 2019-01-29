@@ -2,9 +2,9 @@
 
 using json = nlohmann::json;
 
-Scene::Scene(ConsoleEngine& engine, const int& width, const int& height, std::map<const int, Tile*>* tileInfo, int tileIds[])
+Scene::Scene(ConsoleEngine& engine, const int& width, const int& height, std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tileInfo, int* tileIds) :
+	_engine(engine)
 {
-	_engine = &engine;
 	_width = width;
 	_height = height;
 	_tileInfo = tileInfo;
@@ -14,12 +14,10 @@ Scene::Scene(ConsoleEngine& engine, const int& width, const int& height, std::ma
 Scene::~Scene()
 {
 	//free up memory
-	for (auto const& pair : *_tileInfo) delete pair.second;
 	for (auto const& pair : transport) delete pair.second;
 	for (auto const& pair : players) delete pair.second;
 
 	delete[] _tileIds;
-	delete _tileInfo;
 }
 
 const int Scene::GetTileID(const int& x, const int& y) const
@@ -32,31 +30,31 @@ void Scene::SetTileID(const int& x, const int& y, const int& id)
 	_tileIds[y * _width + x] = id;
 }
 
-Tile* Scene::GetTileInfo(const int& id) const
+shared_ptr<Tile> Scene::GetTileInfo(const int& id) const
 {
-	return (*_tileInfo)[id];
+	return _tileInfo->count(id) ? (*_tileInfo)[id] : nullptr;
 }
 
-Tile* Scene::GetTileInfo(const int& x, const int& y) const
+shared_ptr<Tile> Scene::GetTileInfo(const int& x, const int& y) const
 {
-	return (*_tileInfo)[_tileIds[y * _width + x]];
+	int index = _tileIds[y * _width + x];
+	return _tileInfo->count(index) ? (*_tileInfo)[index] : nullptr;
 }
 
-void Scene::SetTileInfo(const int& id, Tile* tile)
+void Scene::SetTileInfo(const int& id, const Tile& tile)
 {
-	delete (*_tileInfo)[id];
-	(*_tileInfo)[id] = tile;
+	(*_tileInfo)[id] = std::make_shared<Tile>(tile);
 }
 
-void Scene::Update(TcpClient* tcp, Player& player)
+void Scene::Update(TcpClient& tcp, Player& player)
 {
-	if (tcp->GetByHeader("map.request->players") != nullptr)
+	if (tcp.GetByHeader("map.request->players") != nullptr)
 	{
 		DownloadPlayers(tcp, false);
 	}
 
-	int max_render_height = _engine->ScreenHeight() / 2;
-	int max_render_width = (_engine->ScreenWidth() + 1) / 4;
+	int max_render_height = _engine.ScreenHeight() / 2;
+	int max_render_width = (_engine.ScreenWidth() + 1) / 4;
 
 	int render_height = max_render_height > _height ? _height : max_render_height;
 	int render_width = max_render_width > _width ? _width : max_render_width;
@@ -109,17 +107,17 @@ void Scene::Update(TcpClient* tcp, Player& player)
 		{
 			int engine_x = x - x0 + engine_offset_x;
 
-			Tile* t = GetTileInfo(x, y);
+			std::shared_ptr<Tile> t = GetTileInfo(x, y);
 			if (t == nullptr) continue;
 
-			_engine->DrawString(engine_x * 4, engine_y * 2, t->GetDisplay(), t->GetColor());
+			_engine.DrawString(engine_x * 4, engine_y * 2, t->GetDisplay(), t->GetColor());
 
 			//horizontal connections
 			if (engine_x < render_width + engine_offset_x - 1)
 			{
 				if (GetTileID(x, y) == GetTileID(x + 1, y))
 				{
-					_engine->DrawString(engine_x * 4 + 3, engine_y * 2, t->GetConnectionHorizontal(), t->GetColor());
+					_engine.DrawString(engine_x * 4 + 3, engine_y * 2, t->GetConnectionHorizontal(), t->GetColor());
 				}
 			}
 
@@ -128,13 +126,13 @@ void Scene::Update(TcpClient* tcp, Player& player)
 			{
 				if (GetTileID(x, y) == GetTileID(x, y + 1) || (GetTileID(x, y) == 2 || GetTileID(x, y) == 3))
 				{
-					_engine->DrawString(engine_x * 4, engine_y * 2 + 1, t->GetConnectionVertical(), t->GetColor());
+					_engine.DrawString(engine_x * 4, engine_y * 2 + 1, t->GetConnectionVertical(), t->GetColor());
 				}
 				else if (GetTileID(x, y + 1) == 2 || GetTileID(x, y + 1) == 3)
 				{
-					Tile* tOff = GetTileInfo(x, y + 1);
+					std::shared_ptr<Tile> tOff = GetTileInfo(x, y + 1);
 
-					_engine->DrawString(engine_x * 4, engine_y * 2 + 1, tOff->GetConnectionVertical(), tOff->GetColor());
+					_engine.DrawString(engine_x * 4, engine_y * 2 + 1, tOff->GetConnectionVertical(), tOff->GetColor());
 				}
 			}
 		}
@@ -149,28 +147,28 @@ void Scene::Update(TcpClient* tcp, Player& player)
 		if (x > x1 || x < x0) continue;
 		if (y > y1 || y < y0) continue;
 
-		_engine->DrawString((x - x0 + engine_offset_x) * 4, (y - y0 + engine_offset_y) * 2, pair.second->GetDisplay(), FG_RED);
+		_engine.DrawString((x - x0 + engine_offset_x) * 4, (y - y0 + engine_offset_y) * 2, pair.second->GetDisplay(), FG_RED);
 	}
 
 	//render players
 	for (auto const& pair : players)
 	{
-		_engine->DrawString((pair.second->position.x - x0 + engine_offset_x) * 4, (pair.second->position.y - y0 + engine_offset_y) * 2, L"[o]", FG_YELLOW);
+		_engine.DrawString((pair.second->position.x - x0 + engine_offset_x) * 4, (pair.second->position.y - y0 + engine_offset_y) * 2, L"[o]", FG_YELLOW);
 	}
 
 	//render player
-	_engine->DrawString(
+	_engine.DrawString(
 		(player.position.x - x0 + engine_offset_x) * 4,
 		(player.position.y - y0 + engine_offset_y) * 2,
 		L"[@]",
 		FG_RED);
 }
 
-void Scene::DownloadPlayers(TcpClient* tcp, bool request)
+void Scene::DownloadPlayers(TcpClient& tcp, bool request)
 {
-	if (request) tcp->SendRequest("map.request->players\n");
+	if (request) tcp.SendRequest("map.request->players\n");
 
-	const Packet* packet_players = tcp->WaitHeader("map.request->players");
+	std::shared_ptr<Packet> packet_players = tcp.WaitHeader("map.request->players");
 
 	json json = json::parse(packet_players->content + 21);
 
@@ -185,5 +183,5 @@ void Scene::DownloadPlayers(TcpClient* tcp, bool request)
 		players[op->GetID()] = op;
 	}
 
-	tcp->DeletePacket(packet_players);
+	tcp.DeletePacket(packet_players);
 }

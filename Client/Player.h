@@ -14,9 +14,9 @@ class Menu;
 class Player
 {
 public:
-	Player(ConsoleEngine* engine, TcpClient* tcp);
+	Player(ConsoleEngine& engine, TcpClient& tcp);
 	Vector3 position;
-	Scene* scene;
+	std::unique_ptr<Scene> scene;
 	Chat* chat;
 
 	void Update();
@@ -25,8 +25,8 @@ public:
 	void ToggleMenu(bool on = true);
 
 private:
-	ConsoleEngine* _engine;
-	TcpClient* _tcp;
+	ConsoleEngine& _engine;
+	TcpClient& _tcp;
 	Menu* _menu;
 	bool _isInMenu;
 };

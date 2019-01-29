@@ -452,6 +452,13 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 			{
 				cge->keyboard.input.erase(cge->keyboard.input.size() - 1, 1);
 			}
+			cge->keyboard.last_blink = std::chrono::system_clock::now();
+			return 0;
+			
+			// linefeed
+		case 0x0A:
+			// escape 
+		case 0x1B:  
 			return 0;
 
 			// tab 
@@ -460,6 +467,7 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 			{
 				cge->keyboard.input += L' ';
 			}
+			cge->keyboard.last_blink = std::chrono::system_clock::now();
 			return 0;
 
 			// carriage return (no need in this context)
@@ -467,7 +475,15 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 			// displayable character
 		default:
-			cge->keyboard.input += (TCHAR)wParam;
+			if (!(lParam & (1 << 24)))
+			{
+				cge->keyboard.input += (TCHAR)wParam;
+				cge->keyboard.last_blink = std::chrono::system_clock::now();
+			}
+			else
+			{
+				MessageBeep((UINT)-1);
+			}
 			return 0;
 		}
 

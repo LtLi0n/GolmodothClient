@@ -9,13 +9,13 @@ class Player;
 class Menu
 {
 public:
-	Menu(ConsoleEngine* engine, Player& player);
+	Menu(ConsoleEngine& engine, Player& player);
 	~Menu();
 	void Update();
 
 private:
-	ConsoleEngine* _engine;
-	Player* _player;
+	ConsoleEngine& _engine;
+	Player& _player;
 	Button* _button_resume;
 	Button* _button_exit;
 };

@@ -5,7 +5,7 @@
 class Button : public InterfaceObject
 {
 public:
-	Button(ConsoleEngine* engine, const int& widht, const int& height);
+	Button(ConsoleEngine& engine, const int& widht, const int& height);
 
 protected:
 	void OnUpdate() override;
