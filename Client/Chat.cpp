@@ -6,8 +6,7 @@ Chat::Chat(ConsoleEngine* engine)
 	_engine = engine;
 	_off_i = 0;
 	width = 20;
-	height = 7;
-	_inputMode = false;
+	height = 8;
 }
 
 void Chat::AddMessage(const Message& message)
@@ -34,7 +33,7 @@ void Chat::Update()
 	}
 
 	//redo entirely later
-	if (_inputMode)
+	/*if (_inputMode)
 	{
 		bool inputRegistered = false;
 
@@ -87,7 +86,7 @@ void Chat::Update()
 		{
 			_last_blink = std::chrono::system_clock::now();
 		}
-	}
+	}*/
 }
 
 void Chat::Render()
@@ -155,20 +154,24 @@ void Chat::Render()
 		_engine->Draw(width + 1, chat_y + height - closest_at_y - 1, L'O', FG_WHITE);
 	}
 
-	if (_inputMode)
+	if (_engine->keyboard.receive_input)
 	{
-		_engine->DrawString(1, chat_y + height + 3, _input.size() > width ? _input.substr(_input.size() - width) : _input , FG_GREY);
+		_engine->DrawString(
+			1, 
+			chat_y + height + 3, 
+			_engine->keyboard.input.size() > width ? _engine->keyboard.input.substr(_engine->keyboard.input.size() - width) : _engine->keyboard.input, 
+			FG_GREY);
 
 		auto current = std::chrono::system_clock::now();
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _last_blink);
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _engine->keyboard.last_blink);
 
 		if (ms.count() < 500)
 		{
-			_engine->Draw(1 + (_input.size() > width ? width : _input.size()), chat_y + height + 3, L'│', FG_WHITE);
+			_engine->Draw(1 + (_engine->keyboard.input.size() > width ? width : _engine->keyboard.input.size()), chat_y + height + 3, L'│', FG_WHITE);
 		}
 		else if (ms.count() >= 1000)
 		{
-			_last_blink = std::chrono::system_clock::now();
+			_engine->keyboard.last_blink = std::chrono::system_clock::now();
 		}
 	}
 
@@ -176,20 +179,20 @@ void Chat::Render()
 
 void Chat::EnterInputMode()
 {
-	_input.clear();
-	_last_blink = std::chrono::system_clock::now();
-	_inputMode = true;
+	_engine->keyboard.input.clear();
+	_engine->keyboard.last_blink = std::chrono::system_clock::now();
+	_engine->keyboard.receive_input = true;
 }
 
 void Chat::ExitInputMode(const bool& sendInput)
 {
-	if (_input.size() > 0 && sendInput)
+	if (_engine->keyboard.input.size() > 0 && sendInput)
 	{
 		auto chrono_time = std::chrono::system_clock::now();
 		time_t time = std::chrono::system_clock::to_time_t(chrono_time);
-		AddMessage(Message(L"LtLi0n", time, _input));
+		AddMessage(Message(L"LtLi0n", time, _engine->keyboard.input));
 	}
 
-	_input.clear();
-	_inputMode = false;
+	_engine->keyboard.input.clear();
+	_engine->keyboard.receive_input = false;
 }

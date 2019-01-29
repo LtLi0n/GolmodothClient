@@ -120,6 +120,7 @@
     <ClCompile Include="ConsoleEngine.cpp" />
     <ClCompile Include="ConsoleSettings.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
+    <ClCompile Include="KeyboardInputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Message.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="ConsoleSettings.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="KeyboardInputManager.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="OtherPlayer.h" />

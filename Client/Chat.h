@@ -4,6 +4,7 @@
 #include <vector>
 #include "Message.h"
 #include "ConsoleEngine.h"
+#include "KeyboardInputManager.h"
 
 class Chat
 {
@@ -17,16 +18,13 @@ public:
 	int width;
 	int height;
 
-	bool InputMode() const { return _inputMode; }
+	bool InputMode() const { return _engine->keyboard.receive_input; }
 	void EnterInputMode();
 	void ExitInputMode(const bool& sendInput);
 
 private:
-	std::chrono::time_point<std::chrono::system_clock> _last_blink;
-	bool _inputMode;
+	int _off_i;
 	std::vector<Message> _messages;
 	ConsoleEngine* _engine;
-	int _off_i;
-	std::wstring _input;
 };
 

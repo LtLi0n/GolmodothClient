@@ -299,7 +299,7 @@ void GetFontCoords(int id, int *x, int *y) {
 			FUV(9650, 160, 184)FUV(9658, 168, 184)FUV(9660, 176, 184)FUV(9668, 184, 184)FUV(9674, 192, 184)FUV(9675, 200, 184)FUV(9679, 208, 184)
 			FUV(9688, 216, 184)FUV(9689, 224, 184)FUV(9702, 232, 184)FUV(9786, 240, 184)FUV(9787, 248, 184)FUV(9788, 0, 192)FUV(9792, 8, 192)
 			FUV(9794, 16, 192)FUV(9824, 24, 192)FUV(9827, 32, 192)FUV(9829, 40, 192)FUV(9830, 48, 192)FUV(9834, 56, 192)FUV(9835, 64, 192)
-			FUV(10003, 72, 192)FUV(64257, 80, 192)FUV(64258, 88, 192)FUV(65533, 96, 192) default: *x = 96; *y = 192; break;
+	FUV(10003, 72, 192)FUV(64257, 80, 192)FUV(64258, 88, 192)FUV(65533, 96, 192) default: *x = 96; *y = 192; break;
 	}
 }
 
@@ -427,6 +427,7 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 	switch (uMsg)
 	{
+
 	case WM_CREATE:
 		cge = static_cast<ConsoleEngine*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
 
@@ -438,6 +439,38 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 		wglMakeCurrent(cge->m_hDevCtx, cge->m_hRenCtx);
 		ShowWindow(cge->m_hConsole, SW_HIDE);
+		return 0;
+
+		//KeyboardManager
+	case WM_CHAR:
+
+		switch (wParam)
+		{
+			//backspace
+		case 0x08:
+			if (cge->keyboard.input.size() > 0)
+			{
+				cge->keyboard.input.erase(cge->keyboard.input.size() - 1, 1);
+			}
+			return 0;
+
+			// tab 
+		case 0x09:
+			for (int i = 0; i < 4; i++)
+			{
+				cge->keyboard.input += L' ';
+			}
+			return 0;
+
+			// carriage return (no need in this context)
+		case 0x0D: return 0;
+
+			// displayable character
+		default:
+			cge->keyboard.input += (TCHAR)wParam;
+			return 0;
+		}
+
 		return 0;
 
 	case WM_SYSCHAR:
@@ -543,7 +576,7 @@ ConsoleEngine::ConsoleEngine()
 
 	m_sAppName = L"Default";
 
-	//grab 1 GB or memory
+	//grab 1 GB of memory
 	m_bufMemory = (uint8_t*)VirtualAlloc(NULL, 1024 * 1024 * 1024, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (!m_bufMemory) throw exception("No Memory!");
 
@@ -712,14 +745,14 @@ void ConsoleEngine::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short co
 			xe = x1;
 		}
 		Draw(x, y, c, col);
-		for (i = 0; x<xe; i++)
+		for (i = 0; x < xe; i++)
 		{
 			x = x + 1;
-			if (px<0)
+			if (px < 0)
 				px = px + 2 * dy1;
 			else
 			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0))
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
 					y = y + 1;
 				else
 					y = y - 1;
@@ -743,14 +776,14 @@ void ConsoleEngine::DrawLine(int x1, int y1, int x2, int y2, wchar_t c, short co
 			ye = y1;
 		}
 		Draw(x, y, c, col);
-		for (i = 0; y<ye; i++)
+		for (i = 0; y < ye; i++)
 		{
 			y = y + 1;
 			if (py <= 0)
 				py = py + 2 * dx1;
 			else
 			{
-				if ((dx<0 && dy<0) || (dx>0 && dy>0))
+				if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0))
 					x = x + 1;
 				else
 					x = x - 1;
@@ -802,16 +835,16 @@ void ConsoleEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
 	int signx1, signx2, dx1, dy1, dx2, dy2;
 	int e1, e2;
 	// Sort vertices
-	if (y1>y2) { SWAP(y1, y2); SWAP(x1, x2); }
-	if (y1>y3) { SWAP(y1, y3); SWAP(x1, x3); }
-	if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
+	if (y1 > y2) { SWAP(y1, y2); SWAP(x1, x2); }
+	if (y1 > y3) { SWAP(y1, y3); SWAP(x1, x3); }
+	if (y2 > y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
 	t1x = t2x = x1; y = y1;   // Starting points
-	dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
+	dx1 = (int)(x2 - x1); if (dx1 < 0) { dx1 = -dx1; signx1 = -1; }
 	else signx1 = 1;
 	dy1 = (int)(y2 - y1);
 
-	dx2 = (int)(x3 - x1); if (dx2<0) { dx2 = -dx2; signx2 = -1; }
+	dx2 = (int)(x3 - x1); if (dx2 < 0) { dx2 = -dx2; signx2 = -1; }
 	else signx2 = 1;
 	dy2 = (int)(y3 - y1);
 
@@ -831,10 +864,10 @@ void ConsoleEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
 
 	for (int i = 0; i < dx1;) {
 		t1xp = 0; t2xp = 0;
-		if (t1x<t2x) { minx = t1x; maxx = t2x; }
+		if (t1x < t2x) { minx = t1x; maxx = t2x; }
 		else { minx = t2x; maxx = t1x; }
 		// process first line until y value is about to change
-		while (i<dx1) {
+		while (i < dx1) {
 			i++;
 			e1 += dy1;
 			while (e1 >= dx1) {
@@ -859,8 +892,8 @@ void ConsoleEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
 			else              t2x += signx2;
 		}
 	next2:
-		if (minx>t1x) minx = t1x; if (minx>t2x) minx = t2x;
-		if (maxx<t1x) maxx = t1x; if (maxx<t2x) maxx = t2x;
+		if (minx > t1x) minx = t1x; if (minx > t2x) minx = t2x;
+		if (maxx < t1x) maxx = t1x; if (maxx < t2x) maxx = t2x;
 		drawline(minx, maxx, y);    // Draw line from min to max points found on the y
 									// Now increase y
 		if (!changed1) t1x += signx1;
@@ -873,7 +906,7 @@ void ConsoleEngine::FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
 	}
 next:
 	// Second half
-	dx1 = (int)(x3 - x2); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
+	dx1 = (int)(x3 - x2); if (dx1 < 0) { dx1 = -dx1; signx1 = -1; }
 	else signx1 = 1;
 	dy1 = (int)(y3 - y2);
 	t1x = x2;
@@ -888,10 +921,10 @@ next:
 
 	for (int i = 0; i <= dx1; i++) {
 		t1xp = 0; t2xp = 0;
-		if (t1x<t2x) { minx = t1x; maxx = t2x; }
+		if (t1x < t2x) { minx = t1x; maxx = t2x; }
 		else { minx = t2x; maxx = t1x; }
 		// process first line until y value is about to change
-		while (i<dx1) {
+		while (i < dx1) {
 			e1 += dy1;
 			while (e1 >= dx1) {
 				e1 -= dx1;
@@ -900,7 +933,7 @@ next:
 			}
 			if (changed1) break;
 			else   	   	  t1x += signx1;
-			if (i<dx1) i++;
+			if (i < dx1) i++;
 		}
 	next3:
 		// process second line until y value is about to change
@@ -916,15 +949,15 @@ next:
 		}
 	next4:
 
-		if (minx>t1x) minx = t1x; if (minx>t2x) minx = t2x;
-		if (maxx<t1x) maxx = t1x; if (maxx<t2x) maxx = t2x;
+		if (minx > t1x) minx = t1x; if (minx > t2x) minx = t2x;
+		if (maxx < t1x) maxx = t1x; if (maxx < t2x) maxx = t2x;
 		drawline(minx, maxx, y);
 		if (!changed1) t1x += signx1;
 		t1x += t1xp;
 		if (!changed2) t2x += signx2;
 		t2x += t2xp;
 		y += 1;
-		if (y>y3) return;
+		if (y > y3) return;
 	}
 }
 

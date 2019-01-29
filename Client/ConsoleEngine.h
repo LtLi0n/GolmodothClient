@@ -133,6 +133,7 @@ typedef BOOL(WINAPI wglSwapInterval_t) (int interval);
 
 
 #include "ConsoleSettings.h"
+#include "KeyboardInputManager.h"
 
 enum COLOUR
 {
@@ -405,6 +406,7 @@ public:
 	sKeyState GetMouse(int nMouseButtonID) { return m_mouse[nMouseButtonID]; }
 	bool IsFocused() { return m_bConsoleInFocus; }
 	double mouseWheelRotation;
+	KeyboardInputManager keyboard;
 
 protected:
 	int Error(const wchar_t *msg);
@@ -563,7 +565,6 @@ protected: // Audio Engine =====================================================
 	// user gets one final chance to "filter" the sound, perhaps changing the volume
 	// or adding funky effects
 	float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep);
-	
 
 	unsigned int m_nSampleRate;
 	unsigned int m_nChannels;
