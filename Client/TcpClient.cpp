@@ -14,8 +14,10 @@ TcpClient::TcpClient(const char* address, const unsigned short& port)
 
 TcpClient::~TcpClient()
 {
-	delete _address;
-	if(_listeningThread != NULL) delete _listeningThread;	
+	_listening = false;
+
+	if (_listeningThread != nullptr) _listeningThread->join();
+	delete _listeningThread;	
 }
 
 int TcpClient::Start()
@@ -128,7 +130,13 @@ void TcpClient::Listen()
 		char* content = new char[2039];
 		ZeroMemory(content, 2039);
 
-		recv(_socket, (char*)data, 2048, NULL);
+		int iResult = recv(_socket, (char*)data, 2048, NULL);
+		if (iResult == SOCKET_ERROR)
+		{
+			std::cout << iResult << std::endl;
+			_listening = false;
+			return;
+		}
 
 		unsigned int packet_id = *((unsigned int*)data);
 		PacketType packet_type = (PacketType)data[4];
@@ -141,7 +149,6 @@ void TcpClient::Listen()
 		{
 			std::shared_ptr<Packet> packet = std::make_shared<Packet>(packet_type, packet_id, packet_hintId);
 			packet->content = content;
-
 			receivedPackets[packet_id] = packet;
 		}
 

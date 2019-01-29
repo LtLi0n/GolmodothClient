@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <thread>
+#include <atomic>
 
 #include "Packet.h"
 
@@ -31,7 +32,7 @@ private:
 	unsigned short _port;
 	SOCKET _socket;
 	std::thread* _listeningThread;
-	bool _listening;
+	std::atomic<bool> _listening;
 	void Listen();
 };
 

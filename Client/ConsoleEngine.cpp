@@ -454,11 +454,11 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 			}
 			cge->keyboard.last_blink = std::chrono::system_clock::now();
 			return 0;
-			
+
 			// linefeed
 		case 0x0A:
 			// escape 
-		case 0x1B:  
+		case 0x1B:
 			return 0;
 
 			// tab 
@@ -477,8 +477,11 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 		default:
 			if (!(lParam & (1 << 24)))
 			{
-				cge->keyboard.input += (TCHAR)wParam;
-				cge->keyboard.last_blink = std::chrono::system_clock::now();
+				if (cge->keyboard.receive_input)
+				{
+					cge->keyboard.input += (TCHAR)wParam;
+					cge->keyboard.last_blink = std::chrono::system_clock::now();
+				}
 			}
 			else
 			{
@@ -519,6 +522,7 @@ LRESULT CALLBACK ConsoleEngine::olcWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, 
 
 	case WM_CLOSE:
 		m_bAtomActive = false;
+		exit(0);
 		return 0;
 
 	case WM_DESTROY:

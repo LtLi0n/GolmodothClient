@@ -5,7 +5,7 @@ Chat::Chat(ConsoleEngine& engine) : _engine(engine)
 {
 	_off_i = 0;
 	width = 20;
-	height = 8;
+	height = 5;
 }
 
 void Chat::AddMessage(const Message& message)
@@ -34,10 +34,11 @@ void Chat::Update()
 
 void Chat::Render()
 {
-	int chat_y = _engine.ScreenHeight() - height - 5;
+	int chat_y = _engine.ScreenHeight() - height - 2;
 
-	_engine.Fill(0, chat_y - 2, width + 3, chat_y + height, L' ', FG_BLACK);
-
+	_engine.Fill(0, chat_y - 2, width + 3, chat_y - 1, L'-', FG_GREY);
+	_engine.Fill(0, chat_y - 1, width + 3, chat_y + height + 1, L' ', FG_BLACK);
+	
 	int offY = 0;
 
 	//display messages
@@ -58,8 +59,8 @@ void Chat::Render()
 		wstring content = _messages[off_ii].Content();
 
 		//render message
-		_engine.DrawString(1, chat_y + y + offY, time_str, FG_DARK_GREY);
-		_engine.DrawString(9, chat_y + y + offY, _messages[off_ii].Author() + L':', FG_RED);
+		_engine.DrawString(1, chat_y + y + offY - 1, time_str, FG_DARK_GREY);
+		_engine.DrawString(9, chat_y + y + offY - 1, _messages[off_ii].Author() + L':', FG_RED);
 		for (int ln = 0; content.size() > 0; ln++)
 		{
 			wstring output = ln == 0 ? content.substr(0, width - (11 + author_l)) : content.substr(0, width);
@@ -68,7 +69,7 @@ void Chat::Render()
 			if (ln > 0) offY++;
 			if (y + offY >= height) break;
 
-			_engine.DrawString(ln == 0 ? (11 + author_l) : 1, chat_y + y + offY, output, FG_GREY);
+			_engine.DrawString(ln == 0 ? (11 + author_l) : 1, chat_y + y + offY - 1, output, FG_GREY);
 		}
 	}
 
@@ -81,9 +82,9 @@ void Chat::Render()
 		int vertical_bar_pos = _messages.size() - (_off_i + height);
 		if (vertical_bar_pos < 0) vertical_bar_pos = 0;
 
-		for (int y = 0; y < height + 1; y++)
+		for (int y = 0; y < height; y++)
 		{
-			double delta = abs((max_vertical * (y + 1)) / (height + 1) - vertical_bar_pos);
+			double delta = abs((max_vertical * (y + 1)) / height - vertical_bar_pos);
 
 			if (delta < closest_value)
 			{
@@ -94,28 +95,30 @@ void Chat::Render()
 			_engine.Draw(width + 1, chat_y + y - 1, L'|', FG_WHITE);
 		}
 
-		_engine.Draw(width + 1, chat_y + height - closest_at_y - 1, L'O', FG_WHITE);
+		_engine.Draw(width + 1, chat_y + height - closest_at_y - 2, L'O', FG_WHITE);
 	}
+
+	_engine.Fill(0, chat_y + height - 1, _engine.ScreenWidth(), chat_y + height, L'-', FG_GREY);
 
 	if (_engine.keyboard.receive_input)
 	{
 		_engine.DrawString(
-			1, 
-			chat_y + height + 3, 
+			1,
+			chat_y + height,
 			_engine.keyboard.input.size() > width ? _engine.keyboard.input.substr(_engine.keyboard.input.size() - width) : _engine.keyboard.input,
 			FG_GREY);
+	}
 
-		auto current = std::chrono::system_clock::now();
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _engine.keyboard.last_blink);
+	auto current = std::chrono::system_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _engine.keyboard.last_blink);
 
-		if (ms.count() < 500)
-		{
-			_engine.Draw(1 + (_engine.keyboard.input.size() > width ? width : _engine.keyboard.input.size()), chat_y + height + 3, L'│', FG_WHITE);
-		}
-		else if (ms.count() >= 1000)
-		{
-			_engine.keyboard.last_blink = std::chrono::system_clock::now();
-		}
+	if (ms.count() < 500 || !_engine.keyboard.receive_input)
+	{
+		_engine.Draw(1 + (_engine.keyboard.input.size() > width ? width : _engine.keyboard.input.size()), chat_y + height, L'│', FG_WHITE);
+	}
+	else if (ms.count() >= 1000)
+	{
+		_engine.keyboard.last_blink = std::chrono::system_clock::now();
 	}
 
 }

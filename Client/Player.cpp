@@ -9,8 +9,6 @@ using json = nlohmann::json;
 
 Player::Player(ConsoleEngine& engine, TcpClient& tcp) : _engine(engine), _tcp(tcp)
 {
-	_tcp = tcp;
-
 	_menu = new Menu(engine, *this);
 	_isInMenu = false;
 
