@@ -4,20 +4,16 @@
 #include <string>
 
 
-TcpClient::TcpClient(const char* address, const unsigned short& port)
-{
-	_address = address;
-	_port = port;
-
-	_listening = false;
-}
+TcpClient::TcpClient(const char* address, const unsigned short& port) : 
+	_address(address),
+	_port(port),
+	_listening(false) { }
 
 TcpClient::~TcpClient()
 {
 	_listening = false;
 
 	if (_listeningThread != nullptr) _listeningThread->join();
-	delete _listeningThread;	
 }
 
 int TcpClient::Start()
@@ -50,7 +46,7 @@ int TcpClient::Start()
 	}
 
 	_listening = true;
-	_listeningThread = new std::thread(&TcpClient::Listen, this);
+	_listeningThread = std::make_unique<std::thread>(&TcpClient::Listen, this);
 
 	return 0;
 }

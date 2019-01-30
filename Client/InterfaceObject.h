@@ -9,7 +9,7 @@ class InterfaceObject
 public:
 	InterfaceObject(ConsoleEngine& engine, const int& width, const int& height);
 
-	const wchar_t* texture;
+	std::wstring texture;
 	Vector2 position;
 	bool MouseOver() const;
 	void Update();

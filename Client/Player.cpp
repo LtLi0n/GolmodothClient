@@ -7,13 +7,10 @@
 
 using json = nlohmann::json;
 
-Player::Player(ConsoleEngine& engine, TcpClient& tcp) : _engine(engine), _tcp(tcp)
-{
-	_menu = new Menu(engine, *this);
-	_isInMenu = false;
-
-	chat = new Chat(_engine);
-}
+Player::Player(ConsoleEngine& engine, TcpClient& tcp) : 
+	_engine(engine),
+	_tcp(tcp),
+	_interface(engine) { }
 
 void Player::Update()
 {
@@ -27,20 +24,15 @@ void Player::Update()
 	//input code
 	if (_engine.IsFocused())
 	{
-		if (_engine.GetKey(VK_ESCAPE).bPressed)
-		{
-			_isInMenu = !_isInMenu;
-		}
-
-		if(!_isInMenu)
+		if(!_interface.GetMenu().MenuActive())
 		{
 			if (_engine.GetKey(VK_RETURN).bPressed)
 			{
-				if (chat->InputMode()) chat->ExitInputMode(true);
-				else chat->EnterInputMode();
+				if (_interface.GetChat().InputMode()) _interface.GetChat().ExitInputMode(true);
+				else _interface.GetChat().EnterInputMode();
 			}
 
-			if (!chat->InputMode())
+			if (!_interface.GetChat().InputMode())
 			{
 				//NORTH
 				if ((_engine.GetKey(VK_UP).bPressed || _engine.GetKey(0x57).bPressed))
@@ -162,13 +154,10 @@ void Player::Update()
 
 	scene->Update(_tcp, *this);
 
-	chat->Update();
-	chat->Render();
+	_interface.GetChat().Update();
+	_interface.GetChat().Render();
 
-	if (_isInMenu)
-	{
-		_menu->Update();
-	}
+	_interface.GetMenu().Update();
 }
 
 void Player::DownloadScene(const bool& sendPackets)
@@ -272,10 +261,6 @@ void Player::DownloadScene(const bool& sendPackets)
 		}
 	}
 
-	//----old code
-	//delete scene;
-	//scene = new Scene(_engine, map_size_x, map_size_y, tile_info, tiles);
-
 	scene = std::make_unique<Scene>(_engine, map_size_x, map_size_y, tile_info, tiles);
 
 	//load transport tiles
@@ -285,7 +270,7 @@ void Player::DownloadScene(const bool& sendPackets)
 
 		for (int i = 0; i < json.size(); i++)
 		{
-			scene->transport[json[i]["y"].get<int>() * map_size_x + json[i]["x"].get<int>()] = new TransportTile((TransportDirection)json[i]["direction"].get<int>());
+			scene->transport[json[i]["y"].get<int>() * map_size_x + json[i]["x"].get<int>()] = std::make_unique<TransportTile>((TransportDirection)json[i]["direction"].get<int>());
 		}
 
 		bool stopHere = true;
@@ -298,7 +283,4 @@ void Player::DownloadScene(const bool& sendPackets)
 	_tcp.DeletePacket(response_transportNodes);
 }
 
-void Player::ToggleMenu(bool on)
-{
-	_isInMenu = on;
-}
+Interface& Player::GetInterface() { return _interface; }

@@ -1,11 +1,9 @@
 #include "InterfaceObject.h"
 
-InterfaceObject::InterfaceObject(ConsoleEngine& engine, const int& width, const int& height) : _engine(engine)
-{ 
-	this->width = width;
-	this->height = height;
-	texture = new wchar_t[width * height];
-}
+InterfaceObject::InterfaceObject(ConsoleEngine& engine, const int& width, const int& height) :
+	width(width),
+	height(height),
+	_engine(engine) { }
 
 bool InterfaceObject::MouseOver() const { return _mouseOver; }
 

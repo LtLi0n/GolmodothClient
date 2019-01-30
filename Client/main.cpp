@@ -57,7 +57,7 @@ int main()
 {	
 	Game game;
 
-	ConsoleSettings cs(9, 15);
+	ConsoleSettings cs(100, 50, 9, 15);
 
 	if (game.ConstructConsole(cs) == 1) game.Start();
 	else system("pause");

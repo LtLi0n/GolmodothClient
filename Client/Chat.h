@@ -23,8 +23,8 @@ public:
 	void ExitInputMode(const bool& sendInput);
 
 private:
-	int _off_i;
-	std::vector<Message> _messages;
 	ConsoleEngine& _engine;
+	std::vector<Message> _messages;
+	int _off_i;
 };
 

@@ -1,26 +1,20 @@
 #include "Packet.h"
 #include <cstring>
 
-Packet::Packet(const PacketType& type)
-{
-	_id = 0;
-	_type = type;
-	_hintId = 0;
-}
+Packet::Packet(const PacketType& type) :
+	_id(0),
+	_hintId(0),
+	_type(type) { }
 
-Packet::Packet(const PacketType& type, const unsigned int& id)
-{
-	_id = id;
-	_type = type;
-	_hintId = _id;
-}
+Packet::Packet(const PacketType& type, const unsigned int& id) :
+	_id(id),
+	_hintId(0),
+	_type(type) { }
 
-Packet::Packet(const PacketType& type, const unsigned int& id, const unsigned int& hintId)
-{
-	_id = id;
-	_type = type;
-	_hintId = hintId;
-}
+Packet::Packet(const PacketType& type, const unsigned int& id, const unsigned int& hintId) :
+	_id(id),
+	_hintId(hintId),
+	_type(type) { }
 
 const char* Packet::GenerateBuffer() const
 {	

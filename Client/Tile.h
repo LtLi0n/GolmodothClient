@@ -11,11 +11,11 @@ public:
 		const std::wstring& connection_horizontal,
 		const std::wstring& connection_vertical);
 
-	const std::wstring GetDisplay() const { return _display; }
-	const short GetColor() const { return _color; }
-	const bool Walkable() const { return _walkable; };
-	const std::wstring GetConnectionHorizontal() const { return _connection_horizontal; }
-	const std::wstring GetConnectionVertical() const { return _connection_vertical; }
+	const std::wstring& GetDisplay();
+	const short& GetColor();
+	const bool& Walkable();
+	const std::wstring& GetConnectionHorizontal();
+	const std::wstring& GetConnectionVertical();
 
 private:
 	std::wstring _display;

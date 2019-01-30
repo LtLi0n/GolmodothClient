@@ -119,6 +119,7 @@
     <ClCompile Include="Chat.cpp" />
     <ClCompile Include="ConsoleEngine.cpp" />
     <ClCompile Include="ConsoleSettings.cpp" />
+    <ClCompile Include="Interface.cpp" />
     <ClCompile Include="InterfaceObject.cpp" />
     <ClCompile Include="KeyboardInputManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Chat.h" />
     <ClInclude Include="ConsoleEngine.h" />
     <ClInclude Include="ConsoleSettings.h" />
+    <ClInclude Include="Interface.h" />
     <ClInclude Include="InterfaceObject.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="KeyboardInputManager.h" />

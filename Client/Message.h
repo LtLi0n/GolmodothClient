@@ -13,8 +13,8 @@ public:
 	const time_t TimeStamp() const { return _timeStamp; }
 
 private:
-	std::wstring _author;
-	std::wstring _content;
-	time_t _timeStamp;
+	const std::wstring _author;
+	const time_t _timeStamp;
+	const std::wstring _content;
 };
 

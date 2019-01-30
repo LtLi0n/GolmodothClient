@@ -1,12 +1,7 @@
 ﻿#include "Chat.h"
 #include <chrono>
 
-Chat::Chat(ConsoleEngine& engine) : _engine(engine)
-{
-	_off_i = 0;
-	width = 20;
-	height = 5;
-}
+Chat::Chat(ConsoleEngine& engine) : width(20), height(5), _engine(engine), _off_i(0) { }
 
 void Chat::AddMessage(const Message& message)
 {
@@ -112,15 +107,21 @@ void Chat::Render()
 	auto current = std::chrono::system_clock::now();
 	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - _engine.keyboard.last_blink);
 
-	if (ms.count() < 500 || !_engine.keyboard.receive_input)
+	if (_engine.keyboard.receive_input)
 	{
-		_engine.Draw(1 + (_engine.keyboard.input.size() > width ? width : _engine.keyboard.input.size()), chat_y + height, L'│', FG_WHITE);
+		if (ms.count() < 500)
+		{
+			_engine.Draw(1 + (_engine.keyboard.input.size() > width ? width : _engine.keyboard.input.size()), chat_y + height, L'│', FG_WHITE);
+		}
+		else if (ms.count() >= 1000)
+		{
+			_engine.keyboard.last_blink = std::chrono::system_clock::now();
+		}
 	}
-	else if (ms.count() >= 1000)
+	else
 	{
-		_engine.keyboard.last_blink = std::chrono::system_clock::now();
+		_engine.Draw(1 + (_engine.keyboard.input.size() > width ? width : _engine.keyboard.input.size()), chat_y + height, L'_', FG_WHITE);
 	}
-
 }
 
 void Chat::EnterInputMode()

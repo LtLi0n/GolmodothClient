@@ -620,11 +620,11 @@ void ConsoleEngine::EnableSound()
 
 int ConsoleEngine::ConstructConsole(const ConsoleSettings& cs)
 {
-	m_nScreenWidth = cs.render_width;
-	m_nScreenHeight = cs.render_height;
+	m_nScreenWidth = cs.RenderWidth();
+	m_nScreenHeight = cs.RenderHeight();
 
-	m_nFontWidth = cs.font_width;
-	m_nFontHeight = cs.font_height;
+	m_nFontWidth = cs.FontWidth();
+	m_nFontHeight = cs.FontHeight();
 
 	_startInFullscreen = cs.fullscreen;
 

@@ -30,9 +30,10 @@ public:
 private:
     const char* _address;
 	unsigned short _port;
-	SOCKET _socket;
-	std::thread* _listeningThread;
 	std::atomic<bool> _listening;
+	
+	SOCKET _socket;
+	std::unique_ptr<std::thread> _listeningThread;
 	void Listen();
 };
 

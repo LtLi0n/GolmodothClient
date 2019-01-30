@@ -17,8 +17,8 @@ public:
 	unsigned int GetHintID() const;
 
 private:
-	PacketType _type;
-	unsigned int _id;
-	int _hintId; //next packet id to wait for a complete content, if the sent data is bigger than 2039 bytes.
+	const unsigned int& _id;
+	const int& _hintId; //next packet id to wait for a complete content, if the sent data is bigger than 2039 bytes.
+	const PacketType& _type;
 };
 

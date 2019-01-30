@@ -2,48 +2,23 @@
 
 using json = nlohmann::json;
 
-Scene::Scene(ConsoleEngine& engine, const int& width, const int& height, std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tileInfo, int* tileIds) :
-	_engine(engine)
-{
-	_width = width;
-	_height = height;
-	_tileInfo = tileInfo;
-	_tileIds = tileIds;
-}
+Scene::Scene
+(
+	ConsoleEngine& engine,
+	const int& width,
+	const int& height,
+	std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tileInfo,
+	int* tileIds
+) :
+	_engine(engine),
+	_width(width),
+	_height(height),
+	_tileInfo(tileInfo),
+	_tileIds(tileIds) { }
 
 Scene::~Scene()
 {
-	//free up memory
-	for (auto const& pair : transport) delete pair.second;
-	for (auto const& pair : players) delete pair.second;
-
 	delete[] _tileIds;
-}
-
-const int Scene::GetTileID(const int& x, const int& y) const
-{
-	return _tileIds[y * _width + x];
-}
-
-void Scene::SetTileID(const int& x, const int& y, const int& id)
-{
-	_tileIds[y * _width + x] = id;
-}
-
-shared_ptr<Tile> Scene::GetTileInfo(const int& id) const
-{
-	return _tileInfo->count(id) ? (*_tileInfo)[id] : nullptr;
-}
-
-shared_ptr<Tile> Scene::GetTileInfo(const int& x, const int& y) const
-{
-	int index = _tileIds[y * _width + x];
-	return _tileInfo->count(index) ? (*_tileInfo)[index] : nullptr;
-}
-
-void Scene::SetTileInfo(const int& id, const Tile& tile)
-{
-	(*_tileInfo)[id] = std::make_shared<Tile>(tile);
 }
 
 void Scene::Update(TcpClient& tcp, Player& player)
@@ -53,7 +28,7 @@ void Scene::Update(TcpClient& tcp, Player& player)
 		DownloadPlayers(tcp, false);
 	}
 
-	int max_render_height = _engine.ScreenHeight() / 2;
+	int max_render_height = (_engine.ScreenHeight() - player.GetInterface().GetChat().height - 3) / 2;
 	int max_render_width = (_engine.ScreenWidth() + 1) / 4;
 
 	int render_height = max_render_height > _height ? _height : max_render_height;
@@ -139,7 +114,7 @@ void Scene::Update(TcpClient& tcp, Player& player)
 	}
 
 	//render transport nodes
-	for (pair<const int, TransportTile*>& pair : transport)
+	for (pair<const int, std::unique_ptr<TransportTile>>& pair : transport)
 	{
 		int x = pair.first % _width;
 		int y = pair.first / _width;
@@ -172,16 +147,25 @@ void Scene::DownloadPlayers(TcpClient& tcp, bool request)
 
 	json json = json::parse(packet_players->content + 21);
 
-	for (auto const& pair : players) delete pair.second;
 	players.clear();
-
 	for (int i = 0; i < json.size(); i++)
 	{
-		OtherPlayer* op = new OtherPlayer(json[i]["id"].get<int>());
-		op->position = Vector2(json[i]["x"].get<int>(), json[i]["y"].get<int>());
+		int id = json[i]["id"].get<int>();
 
-		players[op->GetID()] = op;
+		players[id] = std::make_unique<OtherPlayer>(id);
+		players[id]->position = Vector2(json[i]["x"].get<int>(), json[i]["y"].get<int>());
 	}
 
 	tcp.DeletePacket(packet_players);
 }
+
+
+//Set
+void Scene::SetTileInfo(const int& id, const Tile& tile) { (*_tileInfo)[id] = std::make_shared<Tile>(tile); }
+void Scene::SetTileID(const int& x, const int& y, const int& id) { _tileIds[y * _width + x] = id; }
+//Get
+shared_ptr<Tile> Scene::GetTileInfo(const int& x, const int& y) { int index = _tileIds[y * _width + x]; return _tileInfo->count(index) ? (*_tileInfo)[index] : nullptr; }
+shared_ptr<Tile> Scene::GetTileInfo(const int& id) { return _tileInfo->count(id) ? (*_tileInfo)[id] : nullptr; }
+const int& Scene::GetTileID(const int& x, const int& y) { return _tileIds[y * _width + x]; }
+const int& Scene::GetWidth() { return _width; }
+const int& Scene::GetHeight() { return _height; }

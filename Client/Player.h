@@ -4,8 +4,7 @@
 #include "ConsoleEngine.h"
 #include "Vector3.h"
 #include "Scene.h"
-#include "Menu.h"
-#include "Chat.h"
+#include "Interface.h"
 
 class TcpClient;
 class Scene;
@@ -17,17 +16,14 @@ public:
 	Player(ConsoleEngine& engine, TcpClient& tcp);
 	Vector3 position;
 	std::unique_ptr<Scene> scene;
-	Chat* chat;
-
 	void Update();
-
 	void DownloadScene(const bool& sendPackets);
-	void ToggleMenu(bool on = true);
+
+	Interface& GetInterface();
 
 private:
 	ConsoleEngine& _engine;
 	TcpClient& _tcp;
-	Menu* _menu;
-	bool _isInMenu;
+	Interface _interface;
 };
 
