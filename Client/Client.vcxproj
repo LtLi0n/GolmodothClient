@@ -115,43 +115,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Button.cpp" />
-    <ClCompile Include="Chat.cpp" />
-    <ClCompile Include="ConsoleEngine.cpp" />
-    <ClCompile Include="ConsoleSettings.cpp" />
-    <ClCompile Include="Interface.cpp" />
-    <ClCompile Include="InterfaceObject.cpp" />
-    <ClCompile Include="KeyboardInputManager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Message.cpp" />
-    <ClCompile Include="OtherPlayer.cpp" />
-    <ClCompile Include="Packet.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="TcpClient.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="TransportTile.cpp" />
+    <ClCompile Include="Source/Engine/ConsoleEngine.cpp" />
+    <ClCompile Include="Source/Engine/ConsoleSettings.cpp" />
+    <ClCompile Include="Source/Engine/KeyboardInputManager.cpp" />
+    <ClCompile Include="Source/Network/Packet.cpp" />
+    <ClCompile Include="Source/Network/TcpClient.cpp" />
+    <ClCompile Include="Source/Interface/Button.cpp" />
+    <ClCompile Include="Source/Interface/Chat.cpp" />
+    <ClCompile Include="Source/Interface/Interface.cpp" />
+    <ClCompile Include="Source/Interface/InterfaceObject.cpp" />
+    <ClCompile Include="Source/Interface/Menu.cpp" />
+    <ClCompile Include="Source/Interface/Message.cpp" />
+    <ClCompile Include="Source/Game/OtherPlayer.cpp" />
+    <ClCompile Include="Source/Game/Player.cpp" />
+    <ClCompile Include="Source/Game/Scene.cpp" />
+    <ClCompile Include="Source/Game/Tile.cpp" />
+    <ClCompile Include="Source/Game/TransportTile.cpp" />
+    <ClCompile Include="Source/main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Button.h" />
-    <ClInclude Include="Chat.h" />
-    <ClInclude Include="ConsoleEngine.h" />
-    <ClInclude Include="ConsoleSettings.h" />
-    <ClInclude Include="Interface.h" />
-    <ClInclude Include="InterfaceObject.h" />
-    <ClInclude Include="json.hpp" />
-    <ClInclude Include="KeyboardInputManager.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Message.h" />
-    <ClInclude Include="OtherPlayer.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="TcpClient.h" />
-    <ClInclude Include="Tile.h" />
-    <ClInclude Include="TransportTile.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Source/Dependencies/json.hpp" />
+    <ClInclude Include="Source/Engine/ConsoleEngine.h" />
+    <ClInclude Include="Source/Engine/ConsoleSettings.h" />
+    <ClInclude Include="Source/Engine/KeyboardInputManager.h" />
+    <ClInclude Include="Source/Network/Packet.h" />
+    <ClInclude Include="Source/Network/TcpClient.h" />
+    <ClInclude Include="Source/Interface/Button.h" />
+    <ClInclude Include="Source/Interface/Chat.h" />
+    <ClInclude Include="Source/Interface/Interface.h" />
+    <ClInclude Include="Source/Interface/InterfaceObject.h" />
+    <ClInclude Include="Source/Interface/Menu.h" />
+    <ClInclude Include="Source/Interface/Message.h" />
+    <ClInclude Include="Source/Game/OtherPlayer.h" />
+    <ClInclude Include="Source/Game/Player.h" />
+    <ClInclude Include="Source/Game/Scene.h" />
+    <ClInclude Include="Source/Game/Tile.h" />
+    <ClInclude Include="Source/Game/TransportTile.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>

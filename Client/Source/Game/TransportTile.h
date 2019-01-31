@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Vector2.h"
+#include "..\Vector2.h"
 
 enum TransportDirection { TRANSPORT_NORTH, TRANSPORT_EAST, TRANSPORT_SOUTH, TRANSPORT_WEST, TRANSPORT_PORTAL };
 

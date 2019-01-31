@@ -23,8 +23,8 @@ public:
 	int Start();
 	int Send(const Packet& packet);
 	int SendRequest(const char* content) const;
-	const std::shared_ptr<Packet> WaitHeader(const char* header) const;
-	const std::shared_ptr<Packet> GetByHeader(const char* header) const;
+	std::shared_ptr<Packet> WaitHeader(const char* header) const;
+	std::shared_ptr<Packet> GetByHeader(const char* header) const;
 	void DeletePacket(const std::shared_ptr<Packet>& packet);
 
 private:

@@ -1,5 +1,6 @@
 #include "Player.h"
-#include "json.hpp"
+
+#include "..\Dependencies\json.hpp"
 #include <map>
 #include <string>
 #include <locale>

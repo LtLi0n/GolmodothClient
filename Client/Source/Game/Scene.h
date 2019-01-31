@@ -1,13 +1,12 @@
 #pragma once
 
+#include <map>
+#include "..\Network\TcpClient.h"
+#include "..\Dependencies\json.hpp"
 #include "Player.h"
-#include "TcpClient.h"
 #include "OtherPlayer.h"
 #include "Tile.h"
 #include "TransportTile.h"
-#include "json.hpp"
-
-#include <map>
 
 class TransportNode;
 class Player;

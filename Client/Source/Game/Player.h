@@ -1,10 +1,11 @@
 #pragma once
 
-#include "TcpClient.h"
-#include "ConsoleEngine.h"
-#include "Vector3.h"
+#include "..\Network\TcpClient.h"
+#include "..\Engine\ConsoleEngine.h"
+#include "..\Vector3.h"
+#include "..\Interface\Interface.h"
+
 #include "Scene.h"
-#include "Interface.h"
 
 class TcpClient;
 class Scene;

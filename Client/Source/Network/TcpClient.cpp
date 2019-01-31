@@ -64,7 +64,7 @@ int TcpClient::SendRequest(const char* content) const
 	return send(_socket, p.GenerateBuffer(), 2040, NULL);
 }
 
-const std::shared_ptr<Packet> TcpClient::WaitHeader(const char* header) const
+std::shared_ptr<Packet> TcpClient::WaitHeader(const char* header) const
 {
 	while (true)
 	{
@@ -77,7 +77,7 @@ const std::shared_ptr<Packet> TcpClient::WaitHeader(const char* header) const
 	}
 }
 
-const std::shared_ptr<Packet> TcpClient::GetByHeader(const char* header) const
+std::shared_ptr<Packet> TcpClient::GetByHeader(const char* header) const
 {
 	for (auto const& x : receivedPackets)
 	{

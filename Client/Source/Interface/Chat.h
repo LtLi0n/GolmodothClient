@@ -2,9 +2,10 @@
 #define _CRT_SECURE_NO_WARNINGS 1 
 
 #include <vector>
+
+#include "..\Engine\ConsoleEngine.h"
+#include "..\Engine\KeyboardInputManager.h"
 #include "Message.h"
-#include "ConsoleEngine.h"
-#include "KeyboardInputManager.h"
 
 class Chat
 {

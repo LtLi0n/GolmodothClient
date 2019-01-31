@@ -1,5 +1,4 @@
 #include "Tile.h"
-#include "ConsoleEngine.h"
 
 Tile::Tile(
 	const std::wstring& display,

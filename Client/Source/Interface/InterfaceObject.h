@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConsoleEngine.h"
-#include "Vector2.h"
+#include "../Engine/ConsoleEngine.h"
+#include "../Vector2.h"
 #include <functional>
 
 class InterfaceObject
