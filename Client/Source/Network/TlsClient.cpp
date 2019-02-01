@@ -1,0 +1,210 @@
+#include "TlsClient.h"
+#include <iostream>
+#include <stdio.h>
+#include <malloc.h>
+#include <errno.h>
+#include <string>
+#include <string.h>
+#include <cstdlib>
+#include <memory>
+
+TlsClient::TlsClient() : _listening(false) { }
+
+SOCKET TlsClient::OpenConnection(const char* host, int port)
+{
+	WSAData data;
+	WORD ver = MAKEWORD(2, 2);
+	int wsResult = WSAStartup(ver, &data);
+	if (wsResult != 0)
+	{
+		printf("Can't start Winsock, Err #%s\n", wsResult);
+		return -1;
+	}
+
+	SOCKET sock = socket(AF_INET, SOCK_STREAM, NULL);
+	if (sock == INVALID_SOCKET)
+	{
+		printf("Can't create socket, Err #%s\n", WSAGetLastError());
+		return -1;
+	}
+
+	sockaddr_in hint;
+	hint.sin_family = AF_INET;
+	hint.sin_port = htons(port);
+	inet_pton(AF_INET, host, &hint.sin_addr);
+
+	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+	if (connResult == SOCKET_ERROR)
+	{
+		printf("Can't connect to host, Err #%s\n", WSAGetLastError());
+		closesocket(sock);
+		WSACleanup();
+		return -1;
+	}
+
+	return sock;
+}
+
+SSL_CTX* TlsClient::InitCTX(void)
+{
+	const SSL_METHOD *method;
+	SSL_CTX *ctx;
+
+	OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+	SSL_load_error_strings();   /* Bring in and register error messages */
+	method = TLSv1_2_client_method();  /* Create new client-method instance */
+	ctx = SSL_CTX_new(method);   /* Create new context */
+	if (ctx == NULL)
+	{
+		ERR_print_errors_fp(stderr);
+		abort();
+	}
+	return ctx;
+}
+
+void TlsClient::ShowCerts(SSL* ssl)
+{
+	X509 *cert;
+	char *line;
+
+	cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
+	if (cert != NULL)
+	{
+		printf("Server certificates:\n");
+		line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+		printf("Subject: %s\n", line);
+		line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+		printf("Issuer: %s\n", line);
+		X509_free(cert);     /* free the malloc'ed certificate copy */
+	}
+	else
+		printf("Info: No client certificates configured.\n");
+}
+
+int TlsClient::Connect(const char* host, const int& port)
+{
+	SSL_library_init();
+	m_ctx = InitCTX();
+	SSL_CTX_load_verify_locations(m_ctx, "public_cert.pem", NULL);
+	m_socket = OpenConnection(host, port);
+	m_ssl = SSL_new(m_ctx);
+	SSL_set_fd(m_ssl, m_socket);
+	if (SSL_connect(m_ssl) == -1)
+	{
+		printf("SSL Connection Error.");
+		return -1;
+	}
+	else
+	{
+		SSL_get_cipher(m_ssl);
+		ShowCerts(m_ssl);
+	}
+
+	_listening = true;
+	_listeningThread = std::make_unique<std::thread>(&TlsClient::Listen, this);
+}
+
+int TlsClient::Send(const Packet& packet)
+{
+	return SSL_write(m_ssl, packet.GenerateBuffer(), 2040);
+	return -1;
+}
+
+int TlsClient::SendRequest(const char* content) const
+{
+	Packet p(PACKET_REQUEST);
+	p.content = content;
+	return SSL_write(m_ssl, p.GenerateBuffer(), 2040);
+}
+
+std::shared_ptr<Packet> TlsClient::WaitHeader(const char* header) const
+{
+	while (true)
+	{
+		const std::shared_ptr<Packet> p = GetByHeader(header);
+
+		if (p != nullptr)
+		{
+			return p;
+		}
+	}
+}
+
+std::shared_ptr<Packet> TlsClient::GetByHeader(const char* header) const
+{
+	for (auto const& x : receivedPackets)
+	{
+		if (x.second == nullptr) continue;
+
+		const char* content = x.second->content;
+		std::string headerStr = "";
+		bool header_found = false;
+
+		for (int i = 0; i < 2039; i++)
+		{
+			if (content[i] == 0) break;
+			if (content[i] == '\n')
+			{
+				header_found = true;
+				break;
+			}
+			headerStr += content[i];
+		}
+
+		if (strcmp(headerStr.c_str(), header) == 0) return x.second;
+	}
+
+	return nullptr;
+}
+
+void TlsClient::DeletePacket(const std::shared_ptr<Packet>& packet)
+{
+	for (auto const& x : receivedPackets)
+	{
+		if (x.second == packet)
+		{
+			receivedPackets.erase(x.first);
+			break;
+		}
+	}
+}
+
+void TlsClient::Listen()
+{
+	while (_listening)
+	{
+		char* data = new char[2048];
+		ZeroMemory(data, 2048);
+
+		char* content = new char[2039];
+		ZeroMemory(content, 2039);
+
+		int bytes = SSL_peek(m_ssl, data, 2048);
+		if (bytes < 2048) continue;
+
+		int iResult = SSL_read(m_ssl, data, 2048);
+
+		if (iResult == SOCKET_ERROR)
+		{
+			std::cout << 1 << std::endl;
+			continue;
+		}
+
+		unsigned int packet_id = *((unsigned int*)data);
+		PacketType packet_type = (PacketType)data[4];
+		for (int i = 0; i < 2039; i++) content[i] = data[i + 5];
+
+		//Offsetting the adress by 2044 bytes. At this point "I'm the smartest programmer that has ever lived."
+		unsigned int packet_hintId = *(unsigned int*)(data + 2044);
+
+		if (packet_type != PACKET_NULL)
+		{
+			std::shared_ptr<Packet> packet = std::make_shared<Packet>(packet_type, packet_id, packet_hintId);
+			packet->content = content;
+			receivedPackets[packet_id] = packet;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+

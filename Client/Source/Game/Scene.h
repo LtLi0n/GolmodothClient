@@ -24,12 +24,12 @@ public:
 	);
 	~Scene();
 
-	void Update(TcpClient& tcp, Player& player);
+	void Update(TlsClient& tls, Player& player);
 
 	std::map<const int, std::unique_ptr<TransportTile>> transport;
 	std::map<const int, std::unique_ptr<OtherPlayer>> players;
 
-	void DownloadPlayers(TcpClient& tcp, bool request);
+	void DownloadPlayers(TlsClient& tls, bool request);
 
 	//Set
 	void SetTileInfo(const int& id, const Tile& tile);

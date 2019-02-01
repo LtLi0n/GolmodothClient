@@ -8,9 +8,9 @@
 
 using json = nlohmann::json;
 
-Player::Player(ConsoleEngine& engine, TcpClient& tcp) : 
+Player::Player(ConsoleEngine& engine, TlsClient& tls) :
 	_engine(engine),
-	_tcp(tcp),
+	_tls(tls),
 	_interface(engine) { }
 
 void Player::Update()
@@ -142,18 +142,18 @@ void Player::Update()
 				Packet pos_update = Packet(PACKET_SEND);
 				std::string content = "map.sync->position\nx: " + std::to_string(position.x) + "\ny: " + std::to_string(position.y);
 				pos_update.content = content.c_str();
-				_tcp.Send(pos_update);
+				_tls.Send(pos_update);
 			}
 
 			if (transport_request)
 			{
-				_tcp.SendRequest("map.request->transport\n");
+				_tls.SendRequest("map.request->transport\n");
 				DownloadScene(false);
 			}
 		}
 	}
 
-	scene->Update(_tcp, *this);
+	scene->Update(_tls, *this);
 
 	_interface.GetChat().Update();
 	_interface.GetChat().Render();
@@ -165,15 +165,15 @@ void Player::DownloadScene(const bool& sendPackets)
 {
 	if (sendPackets)
 	{
-		_tcp.SendRequest("map.request->tile_info\n");
-		_tcp.SendRequest("map.request->tiles\n");
-		_tcp.SendRequest("map.request->transport_nodes\n");
+		_tls.SendRequest("map.request->tile_info\n");
+		_tls.SendRequest("map.request->tiles\n");
+		_tls.SendRequest("map.request->transport_nodes\n");
 	}
 
 	std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tile_info = std::make_shared<std::map<const int, std::shared_ptr<Tile>>>();
 
 	//load tile info of the scene
-	std::shared_ptr<Packet> response_tileInfo = _tcp.WaitHeader("map.request->tile_info");
+	std::shared_ptr<Packet> response_tileInfo = _tls.WaitHeader("map.request->tile_info");
 	{	
 		json json = json::parse(response_tileInfo->content + 23);
 
@@ -194,7 +194,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	int map_size_x, map_size_y;
 
 	//load corresponding tile ids of the scene
-	std::shared_ptr<Packet> response_tiles = _tcp.WaitHeader("map.request->tiles");
+	std::shared_ptr<Packet> response_tiles = _tls.WaitHeader("map.request->tiles");
 	{
 		std::string map_size_x_str;
 		std::string map_size_y_str;
@@ -265,7 +265,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	scene = std::make_unique<Scene>(_engine, map_size_x, map_size_y, tile_info, tiles);
 
 	//load transport tiles
-	std::shared_ptr<Packet> response_transportNodes = _tcp.WaitHeader("map.request->transport_nodes");
+	std::shared_ptr<Packet> response_transportNodes = _tls.WaitHeader("map.request->transport_nodes");
 	{
 		json json = json::parse(response_transportNodes->content + 29);
 
@@ -277,11 +277,11 @@ void Player::DownloadScene(const bool& sendPackets)
 		bool stopHere = true;
 	}
 
-	scene->DownloadPlayers(_tcp, true);
+	scene->DownloadPlayers(_tls, true);
 
-	_tcp.DeletePacket(response_tileInfo);
-	_tcp.DeletePacket(response_tiles);
-	_tcp.DeletePacket(response_transportNodes);
+	_tls.DeletePacket(response_tileInfo);
+	_tls.DeletePacket(response_tiles);
+	_tls.DeletePacket(response_transportNodes);
 }
 
 Interface& Player::GetInterface() { return _interface; }

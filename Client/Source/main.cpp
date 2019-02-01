@@ -14,6 +14,8 @@
 #include "Game\Player.h"
 #include "Interface\Button.h"
 
+#include "Network\TlsClient.h"
+
 using json = nlohmann::json;
 
 #define RENDER_WIDTH 75
@@ -23,13 +25,13 @@ class Game : public ConsoleEngine
 {
 public:
 	Player player;
-	TcpClient tcp;
+	TlsClient tls;
 
 	Game() : 
-		tcp("192.168.1.233", 5000),
-		player(*this, tcp)
+		tls(),
+		player(*this, tls)
 	{
-		tcp.Start();
+		tls.Connect("192.168.1.233", 5000);
 		player.DownloadScene(true);
 	}
 

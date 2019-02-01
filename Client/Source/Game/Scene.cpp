@@ -21,11 +21,11 @@ Scene::~Scene()
 	delete[] _tileIds;
 }
 
-void Scene::Update(TcpClient& tcp, Player& player)
+void Scene::Update(TlsClient& tls, Player& player)
 {
-	if (tcp.GetByHeader("map.request->players") != nullptr)
+	if (tls.GetByHeader("map.request->players") != nullptr)
 	{
-		DownloadPlayers(tcp, false);
+		DownloadPlayers(tls, false);
 	}
 
 	int max_render_height = (_engine.ScreenHeight() - player.GetInterface().GetChat().height - 3) / 2;
@@ -139,11 +139,11 @@ void Scene::Update(TcpClient& tcp, Player& player)
 		FG_RED);
 }
 
-void Scene::DownloadPlayers(TcpClient& tcp, bool request)
+void Scene::DownloadPlayers(TlsClient& tls, bool request)
 {
-	if (request) tcp.SendRequest("map.request->players\n");
+	if (request) tls.SendRequest("map.request->players\n");
 
-	std::shared_ptr<Packet> packet_players = tcp.WaitHeader("map.request->players");
+	std::shared_ptr<Packet> packet_players = tls.WaitHeader("map.request->players");
 
 	json json = json::parse(packet_players->content + 21);
 
@@ -156,7 +156,7 @@ void Scene::DownloadPlayers(TcpClient& tcp, bool request)
 		players[id]->position = Vector2(json[i]["x"].get<int>(), json[i]["y"].get<int>());
 	}
 
-	tcp.DeletePacket(packet_players);
+	tls.DeletePacket(packet_players);
 }
 
 

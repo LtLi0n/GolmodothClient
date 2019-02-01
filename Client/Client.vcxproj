@@ -76,7 +76,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\OpenSSL\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\OpenSSL\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>capi.lib;dasync.lib;libcrypto.lib;libssl.lib;openssl.lib;ossltest.lib;padlock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,7 +89,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\OpenSSL\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\OpenSSL\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>capi.lib;dasync.lib;libcrypto.lib;libssl.lib;openssl.lib;ossltest.lib;padlock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,10 +104,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\OpenSSL\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\OpenSSL\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>capi.lib;dasync.lib;libcrypto.lib;libssl.lib;openssl.lib;ossltest.lib;padlock.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,10 +121,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\OpenSSL\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\OpenSSL\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>capi.lib;dasync.lib;libcrypto.lib;libssl.lib;openssl.lib;ossltest.lib;padlock.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,7 +135,6 @@
     <ClCompile Include="Source/Engine/ConsoleSettings.cpp" />
     <ClCompile Include="Source/Engine/KeyboardInputManager.cpp" />
     <ClCompile Include="Source/Network/Packet.cpp" />
-    <ClCompile Include="Source/Network/TcpClient.cpp" />
     <ClCompile Include="Source/Interface/Button.cpp" />
     <ClCompile Include="Source/Interface/Chat.cpp" />
     <ClCompile Include="Source/Interface/Interface.cpp" />
@@ -132,6 +147,7 @@
     <ClCompile Include="Source/Game/Tile.cpp" />
     <ClCompile Include="Source/Game/TransportTile.cpp" />
     <ClCompile Include="Source/main.cpp" />
+    <ClCompile Include="Source\Network\TlsClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source/Dependencies/json.hpp" />
@@ -139,7 +155,6 @@
     <ClInclude Include="Source/Engine/ConsoleSettings.h" />
     <ClInclude Include="Source/Engine/KeyboardInputManager.h" />
     <ClInclude Include="Source/Network/Packet.h" />
-    <ClInclude Include="Source/Network/TcpClient.h" />
     <ClInclude Include="Source/Interface/Button.h" />
     <ClInclude Include="Source/Interface/Chat.h" />
     <ClInclude Include="Source/Interface/Interface.h" />
@@ -151,8 +166,9 @@
     <ClInclude Include="Source/Game/Scene.h" />
     <ClInclude Include="Source/Game/Tile.h" />
     <ClInclude Include="Source/Game/TransportTile.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Source/Vector2.h" />
+    <ClInclude Include="Source/Vector3.h" />
+    <ClInclude Include="Source\Network\TlsClient.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\Network\TcpClient.h"
+#include "..\Network\TlsClient.h"
 #include "..\Engine\ConsoleEngine.h"
 #include "..\Vector3.h"
 #include "..\Interface\Interface.h"
@@ -14,7 +14,7 @@ class Menu;
 class Player
 {
 public:
-	Player(ConsoleEngine& engine, TcpClient& tcp);
+	Player(ConsoleEngine& engine, TlsClient& tls);
 	Vector3 position;
 	std::unique_ptr<Scene> scene;
 	void Update();
@@ -24,7 +24,7 @@ public:
 
 private:
 	ConsoleEngine& _engine;
-	TcpClient& _tcp;
+	TlsClient& _tls;
 	Interface _interface;
 };
 
