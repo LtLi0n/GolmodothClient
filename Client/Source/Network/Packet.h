@@ -7,18 +7,19 @@ class Packet
 public:
 	Packet(const PacketType& type);
 	Packet(const PacketType& type, const unsigned int& id);
-	Packet(const PacketType& type, const unsigned int& id, const unsigned int& hintId);
 	Packet() = default;
 
-	const char* content; //2039
+	void AddContent(const char* content);
 	const char* GenerateBuffer() const;
 	PacketType GetType() const;
 	unsigned int GetID() const;
-	unsigned int GetHintID() const;
 
+    const char* Content() const;
+	const int& ContentLength() const;
 private:
-	const unsigned int& _id;
-	const int& _hintId; //next packet id to wait for a complete content, if the sent data is bigger than 2039 bytes.
-	const PacketType& _type;
+	const char* m_content;
+	int m_content_n;
+	const unsigned int& m_id;
+	const PacketType& m_type;
 };
 

@@ -1,5 +1,4 @@
 #include "TlsClient.h"
-#include <iostream>
 #include <stdio.h>
 #include <malloc.h>
 #include <errno.h>
@@ -97,7 +96,7 @@ int TlsClient::Connect(const char* host, const int& port)
 	else
 	{
 		SSL_get_cipher(m_ssl);
-		ShowCerts(m_ssl);
+		//ShowCerts(m_ssl);
 	}
 
 	_listening = true;
@@ -106,15 +105,14 @@ int TlsClient::Connect(const char* host, const int& port)
 
 int TlsClient::Send(const Packet& packet)
 {
-	return SSL_write(m_ssl, packet.GenerateBuffer(), 2040);
-	return -1;
+	return SSL_write(m_ssl, packet.GenerateBuffer(), packet.ContentLength() + 5);
 }
 
 int TlsClient::SendRequest(const char* content) const
 {
 	Packet p(PACKET_REQUEST);
-	p.content = content;
-	return SSL_write(m_ssl, p.GenerateBuffer(), 2040);
+	p.AddContent(content);
+	return SSL_write(m_ssl, p.GenerateBuffer(), p.ContentLength() + 5);
 }
 
 std::shared_ptr<Packet> TlsClient::WaitHeader(const char* header) const
@@ -136,22 +134,15 @@ std::shared_ptr<Packet> TlsClient::GetByHeader(const char* header) const
 	{
 		if (x.second == nullptr) continue;
 
-		const char* content = x.second->content;
+		const char* content = x.second->Content();
 		std::string headerStr = "";
 		bool header_found = false;
 
-		for (int i = 0; i < 2039; i++)
+		for (int i = 0; i < x.second->ContentLength(); i++)
 		{
-			if (content[i] == 0) break;
-			if (content[i] == '\n')
-			{
-				header_found = true;
-				break;
-			}
 			headerStr += content[i];
+			if (strcmp(headerStr.c_str(), header) == 0) return x.second;
 		}
-
-		if (strcmp(headerStr.c_str(), header) == 0) return x.second;
 	}
 
 	return nullptr;
@@ -171,37 +162,47 @@ void TlsClient::DeletePacket(const std::shared_ptr<Packet>& packet)
 
 void TlsClient::Listen()
 {
+	int heldBytes = 0;
+	char* data = nullptr;
+	char size_bytes[4];
+
 	while (_listening)
 	{
-		char* data = new char[2048];
-		ZeroMemory(data, 2048);
-
-		char* content = new char[2039];
-		ZeroMemory(content, 2039);
-
-		int bytes = SSL_peek(m_ssl, data, 2048);
-		if (bytes < 2048) continue;
-
-		int iResult = SSL_read(m_ssl, data, 2048);
-
-		if (iResult == SOCKET_ERROR)
+		if (heldBytes == 0)
 		{
-			std::cout << 1 << std::endl;
-			continue;
+			int bytes = SSL_peek(m_ssl, size_bytes, 4);
+			if (bytes < 4) continue;
+
+			int iResult = SSL_read(m_ssl, size_bytes, 4);
+
+			if (iResult == SOCKET_ERROR) continue;
+			heldBytes = *((unsigned int*)size_bytes);
+			data = new char[heldBytes];
+			ZeroMemory(data, heldBytes);
 		}
-
-		unsigned int packet_id = *((unsigned int*)data);
-		PacketType packet_type = (PacketType)data[4];
-		for (int i = 0; i < 2039; i++) content[i] = data[i + 5];
-
-		//Offsetting the adress by 2044 bytes. At this point "I'm the smartest programmer that has ever lived."
-		unsigned int packet_hintId = *(unsigned int*)(data + 2044);
-
-		if (packet_type != PACKET_NULL)
+		if (heldBytes > 0)
 		{
-			std::shared_ptr<Packet> packet = std::make_shared<Packet>(packet_type, packet_id, packet_hintId);
-			packet->content = content;
-			receivedPackets[packet_id] = packet;
+			int result = SSL_read(m_ssl, data, heldBytes);
+
+			int content_size = heldBytes - 5;
+
+			//NULL terminator
+			char* content = new char[content_size + 1];
+			ZeroMemory(content, content_size + 1);
+
+			unsigned int packet_id = *((unsigned int*)data);
+			PacketType packet_type = (PacketType)data[4];
+			for (int i = 0; i < content_size; i++) content[i] = data[i + 5];
+
+			if (packet_type != PACKET_NULL)
+			{
+				std::shared_ptr<Packet> packet = std::make_shared<Packet>(packet_type, packet_id);
+				packet->AddContent(content);
+				receivedPackets[packet_id] = packet;
+			}
+
+			heldBytes = 0;
+			delete[] data;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

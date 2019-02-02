@@ -141,13 +141,13 @@ void Player::Update()
 			{
 				Packet pos_update = Packet(PACKET_SEND);
 				std::string content = "map.sync->position\nx: " + std::to_string(position.x) + "\ny: " + std::to_string(position.y);
-				pos_update.content = content.c_str();
+				pos_update.AddContent(content.c_str());
 				_tls.Send(pos_update);
 			}
 
 			if (transport_request)
 			{
-				_tls.SendRequest("map.request->transport\n");
+				_tls.SendRequest("map.request->transport");
 				DownloadScene(false);
 			}
 		}
@@ -165,9 +165,9 @@ void Player::DownloadScene(const bool& sendPackets)
 {
 	if (sendPackets)
 	{
-		_tls.SendRequest("map.request->tile_info\n");
-		_tls.SendRequest("map.request->tiles\n");
-		_tls.SendRequest("map.request->transport_nodes\n");
+		_tls.SendRequest("map.request->tile_info");
+		_tls.SendRequest("map.request->tiles");
+		_tls.SendRequest("map.request->transport_nodes");
 	}
 
 	std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tile_info = std::make_shared<std::map<const int, std::shared_ptr<Tile>>>();
@@ -175,7 +175,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	//load tile info of the scene
 	std::shared_ptr<Packet> response_tileInfo = _tls.WaitHeader("map.request->tile_info");
 	{	
-		json json = json::parse(response_tileInfo->content + 23);
+		json json = json::parse(response_tileInfo->Content() + 23);
 
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
@@ -207,31 +207,31 @@ void Player::DownloadScene(const bool& sendPackets)
 		//width
 		for (int i = (offsetter = 19); ; i++)
 		{
-			if (response_tiles->content[i] == 'x') break;
-			map_size_x_str += response_tiles->content[i];
+			if (response_tiles->Content()[i] == 'x') break;
+			map_size_x_str += response_tiles->Content()[i];
 		}
 		map_size_x = std::stoi(map_size_x_str);
 
 		//height
 		for (int i = (offsetter += 1 + map_size_x_str.size()); ; i++)
 		{
-			if (response_tiles->content[i] == '\n') break;
-			map_size_y_str += response_tiles->content[i];
+			if (response_tiles->Content()[i] == '\n') break;
+			map_size_y_str += response_tiles->Content()[i];
 		}
 		map_size_y = std::stoi(map_size_y_str);
 
 		//pos_x
 		for (int i = (offsetter += 1 + map_size_y_str.size()); ; i++)
 		{
-			if (response_tiles->content[i] == ' ') break;
-			player_pos_x += response_tiles->content[i];
+			if (response_tiles->Content()[i] == ' ') break;
+			player_pos_x += response_tiles->Content()[i];
 		}
 
 		//pos_y
 		for (int i = (offsetter += 1 + player_pos_x.size()); ; i++)
 		{
-			if (response_tiles->content[i] == '\n') break;
-			player_pos_y += response_tiles->content[i];
+			if (response_tiles->Content()[i] == '\n') break;
+			player_pos_y += response_tiles->Content()[i];
 		}
 
 		position.x = stoi(player_pos_x);
@@ -242,22 +242,22 @@ void Player::DownloadScene(const bool& sendPackets)
 		int current_x = 0;
 		int current_y = 0;
 
-		int header_length = strlen(response_tiles->content);
+		int header_length = strlen(response_tiles->Content());
 
 		for (int i = (offsetter += 1 + player_pos_y.size()); i < header_length; i++)
 		{
-			if (response_tiles->content[i] == '\n')
+			if (response_tiles->Content()[i] == '\n')
 			{
 				current_y++;
 				current_x = 0;
 			}
-			else if (response_tiles->content[i] == ',')
+			else if (response_tiles->Content()[i] == ',')
 			{
 				current_x++;
 			}
 			else
 			{
-				tiles[current_y * map_size_x + current_x] = (int)response_tiles->content[i] - 48;
+				tiles[current_y * map_size_x + current_x] = (int)response_tiles->Content()[i] - 48;
 			}
 		}
 	}
@@ -267,7 +267,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	//load transport tiles
 	std::shared_ptr<Packet> response_transportNodes = _tls.WaitHeader("map.request->transport_nodes");
 	{
-		json json = json::parse(response_transportNodes->content + 29);
+		json json = json::parse(response_transportNodes->Content() + 29);
 
 		for (int i = 0; i < json.size(); i++)
 		{

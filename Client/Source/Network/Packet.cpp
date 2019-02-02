@@ -1,37 +1,41 @@
 #include "Packet.h"
 #include <cstring>
+#include <string>
+#include <iostream>
 
 Packet::Packet(const PacketType& type) :
-	_id(0),
-	_hintId(0),
-	_type(type) { }
+	m_id(0),
+	m_type(type) { }
 
 Packet::Packet(const PacketType& type, const unsigned int& id) :
-	_id(id),
-	_hintId(0),
-	_type(type) { }
+	m_id(id),
+	m_type(type) { }
 
-Packet::Packet(const PacketType& type, const unsigned int& id, const unsigned int& hintId) :
-	_id(id),
-	_hintId(hintId),
-	_type(type) { }
+void Packet::AddContent(const char* content)
+{
+	m_content = content;
+	m_content_n = strlen(content);
+}
 
+//redo to streams later.
+//this approach is too expensive
 const char* Packet::GenerateBuffer() const
 {	
-	char* buffer = new char[2040];
-	
-	//type
-	buffer[0] = (char)_type;
+	int buffer_l = m_content_n + 1;
+	char* buffer = new char[buffer_l + 4];
 
-	//0 everything out
-	for (int i = 0; i < 2039; i++)buffer[i + 1] = 0;
+	std::memcpy(buffer, &buffer_l, 4);
+
+	//type
+	buffer[4] = (char)m_type;
 
 	//set data
-	for (int i = 0; i < strlen(content); i++) buffer[i + 1] = content[i];
+	for (int i = 0; i < m_content_n; i++) buffer[i + 5] = m_content[i];
 
 	return (const char*)buffer;
 }
 
-PacketType Packet::GetType() const { return _type; }
-unsigned int Packet::GetID() const { return _id; }
-unsigned int Packet::GetHintID() const { return _hintId; }
+PacketType Packet::GetType() const { return m_type; }
+unsigned int Packet::GetID() const { return m_id; }
+const char* Packet::Content() const { return m_content; }
+const int& Packet::ContentLength() const { return m_content_n; }

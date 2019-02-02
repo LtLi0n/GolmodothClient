@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "..\Network\TcpClient.h"
+#include "..\Network\TlsClient.h"
 #include "..\Dependencies\json.hpp"
 #include "Player.h"
 #include "OtherPlayer.h"

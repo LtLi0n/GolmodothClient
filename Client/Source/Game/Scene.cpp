@@ -141,11 +141,11 @@ void Scene::Update(TlsClient& tls, Player& player)
 
 void Scene::DownloadPlayers(TlsClient& tls, bool request)
 {
-	if (request) tls.SendRequest("map.request->players\n");
+	if (request) tls.SendRequest("map.request->players");
 
 	std::shared_ptr<Packet> packet_players = tls.WaitHeader("map.request->players");
 
-	json json = json::parse(packet_players->content + 21);
+	json json = json::parse(packet_players->Content() + 21);
 
 	players.clear();
 	for (int i = 0; i < json.size(); i++)

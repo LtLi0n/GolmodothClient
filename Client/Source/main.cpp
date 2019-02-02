@@ -1,4 +1,4 @@
-﻿#include "Network\TcpClient.h" //redefition madness, need to move up
+﻿#include "Network\TlsClient.h" //redefition madness, need to move up
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -13,8 +13,6 @@
 
 #include "Game\Player.h"
 #include "Interface\Button.h"
-
-#include "Network\TlsClient.h"
 
 using json = nlohmann::json;
 
