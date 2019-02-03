@@ -1,4 +1,4 @@
-﻿#include "Network\TlsClient.h" //redefition madness, need to move up
+﻿#include "Interface/LoginScreen.h" //redefition madness, need to move up
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -8,11 +8,11 @@
 #include <stdio.h>
 #include <Windows.h>
 
-#include "Engine\ConsoleEngine.h"
-#include "Dependencies\json.hpp"
+#include "Engine/ConsoleEngine.h"
+#include "Dependencies/json.hpp"
 
-#include "Game\Player.h"
-#include "Interface\Button.h"
+#include "Game/Player.h"
+#include "Interface/Button.h"
 
 using json = nlohmann::json;
 
@@ -45,7 +45,7 @@ protected:
 	virtual bool OnUserUpdate(float fElapsedTime)
 	{
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), U' ');
-
+		
 		player.Update();
 
 		return true;
@@ -56,7 +56,7 @@ int main()
 {	
 	Game game;
 
-	ConsoleSettings cs(100, 50, 9, 15);
+	ConsoleSettings cs(150, 50, 9, 15);
 
 	if (game.ConstructConsole(cs) == 1) game.Start();
 	else system("pause");

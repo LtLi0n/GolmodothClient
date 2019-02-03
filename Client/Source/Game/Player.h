@@ -4,6 +4,7 @@
 #include "..\Engine\ConsoleEngine.h"
 #include "..\Vector3.h"
 #include "..\Interface\Interface.h"
+#include "..\Interface\LoginScreen.h"
 
 #include "Scene.h"
 
@@ -23,8 +24,9 @@ public:
 	Interface& GetInterface();
 
 private:
-	ConsoleEngine& _engine;
-	TlsClient& _tls;
-	Interface _interface;
+	ConsoleEngine& m_engine;
+	TlsClient& m_tls;
+	Interface m_interface;
+	LoginScreen m_loginScreen;
 };
 

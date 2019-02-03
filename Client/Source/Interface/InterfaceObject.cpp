@@ -3,7 +3,8 @@
 InterfaceObject::InterfaceObject(ConsoleEngine& engine, const int& width, const int& height) :
 	width(width),
 	height(height),
-	_engine(engine) { }
+	_engine(engine),
+	focused(false) { }
 
 bool InterfaceObject::MouseOver() const { return _mouseOver; }
 

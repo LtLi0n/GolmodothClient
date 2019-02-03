@@ -9,12 +9,19 @@
 using json = nlohmann::json;
 
 Player::Player(ConsoleEngine& engine, TlsClient& tls) :
-	_engine(engine),
-	_tls(tls),
-	_interface(engine) { }
+	m_engine(engine),
+	m_tls(tls),
+	m_interface(engine),
+	m_loginScreen(engine, tls) { }
 
 void Player::Update()
 {
+	if (!m_loginScreen.LoggedIn())
+	{
+		m_loginScreen.Update();
+		return;
+	}
+
 	if (scene == nullptr) return;
 
 	bool isOnTransport = scene->transport.count(position.y * scene->GetWidth() + position.x) == 1;
@@ -23,20 +30,20 @@ void Player::Update()
 	bool transport_request = false;
 
 	//input code
-	if (_engine.IsFocused())
+	if (m_engine.IsFocused())
 	{
-		if(!_interface.GetMenu().MenuActive())
+		if(!m_interface.GetMenu().m_menuActive)
 		{
-			if (_engine.GetKey(VK_RETURN).bPressed)
+			if (m_engine.GetKey(VK_RETURN).bPressed)
 			{
-				if (_interface.GetChat().InputMode()) _interface.GetChat().ExitInputMode(true);
-				else _interface.GetChat().EnterInputMode();
+				if (m_interface.GetChat().InputMode()) m_interface.GetChat().ExitInputMode(true);
+				else m_interface.GetChat().EnterInputMode();
 			}
 
-			if (!_interface.GetChat().InputMode())
+			if (!m_interface.GetChat().InputMode())
 			{
 				//NORTH
-				if ((_engine.GetKey(VK_UP).bPressed || _engine.GetKey(0x57).bPressed))
+				if ((m_engine.GetKey(VK_UP).bPressed || m_engine.GetKey(0x57).bPressed))
 				{
 					bool skip = false;
 
@@ -61,7 +68,7 @@ void Player::Update()
 					}
 				}
 				//EAST
-				else if (_engine.GetKey(VK_RIGHT).bPressed || _engine.GetKey(0x44).bPressed)
+				else if (m_engine.GetKey(VK_RIGHT).bPressed || m_engine.GetKey(0x44).bPressed)
 				{
 					bool skip = false;
 
@@ -86,7 +93,7 @@ void Player::Update()
 					}
 				}
 				//SOUTH
-				else if (_engine.GetKey(VK_DOWN).bPressed || _engine.GetKey(0x53).bPressed)
+				else if (m_engine.GetKey(VK_DOWN).bPressed || m_engine.GetKey(0x53).bPressed)
 				{
 					bool skip = false;
 
@@ -111,7 +118,7 @@ void Player::Update()
 					}
 				}
 				//WEST
-				else if ((_engine.GetKey(VK_LEFT).bPressed || _engine.GetKey(0x41).bPressed))
+				else if ((m_engine.GetKey(VK_LEFT).bPressed || m_engine.GetKey(0x41).bPressed))
 				{
 					bool skip = false;
 
@@ -142,38 +149,44 @@ void Player::Update()
 				Packet pos_update = Packet(PACKET_SEND);
 				std::string content = "map.sync->position\nx: " + std::to_string(position.x) + "\ny: " + std::to_string(position.y);
 				pos_update.AddContent(content.c_str());
-				_tls.Send(pos_update);
+				m_tls.Send(pos_update);
 			}
 
 			if (transport_request)
 			{
-				_tls.SendRequest("map.request->transport");
+				m_tls.SendRequest("map.request->transport");
 				DownloadScene(false);
 			}
 		}
 	}
 
-	scene->Update(_tls, *this);
+	scene->Update(m_tls, *this);
 
-	_interface.GetChat().Update();
-	_interface.GetChat().Render();
+	m_interface.GetChat().Update();
+	m_interface.GetChat().Render();
 
-	_interface.GetMenu().Update();
+	m_interface.GetMenu().Update();
+	if (m_interface.GetMenu().m_logout_request)
+	{
+		m_interface.GetMenu().m_logout_request = false;
+		m_interface.GetMenu().m_menuActive = false;
+		m_loginScreen.Logout();
+	}
 }
 
 void Player::DownloadScene(const bool& sendPackets)
 {
 	if (sendPackets)
 	{
-		_tls.SendRequest("map.request->tile_info");
-		_tls.SendRequest("map.request->tiles");
-		_tls.SendRequest("map.request->transport_nodes");
+		m_tls.SendRequest("map.request->tile_info");
+		m_tls.SendRequest("map.request->tiles");
+		m_tls.SendRequest("map.request->transport_nodes");
 	}
 
 	std::shared_ptr<std::map<const int, std::shared_ptr<Tile>>> tile_info = std::make_shared<std::map<const int, std::shared_ptr<Tile>>>();
 
 	//load tile info of the scene
-	std::shared_ptr<Packet> response_tileInfo = _tls.WaitHeader("map.request->tile_info");
+	std::shared_ptr<Packet> response_tileInfo = m_tls.WaitHeader("map.request->tile_info");
 	{	
 		json json = json::parse(response_tileInfo->Content() + 23);
 
@@ -194,7 +207,7 @@ void Player::DownloadScene(const bool& sendPackets)
 	int map_size_x, map_size_y;
 
 	//load corresponding tile ids of the scene
-	std::shared_ptr<Packet> response_tiles = _tls.WaitHeader("map.request->tiles");
+	std::shared_ptr<Packet> response_tiles = m_tls.WaitHeader("map.request->tiles");
 	{
 		std::string map_size_x_str;
 		std::string map_size_y_str;
@@ -262,10 +275,10 @@ void Player::DownloadScene(const bool& sendPackets)
 		}
 	}
 
-	scene = std::make_unique<Scene>(_engine, map_size_x, map_size_y, tile_info, tiles);
+	scene = std::make_unique<Scene>(m_engine, map_size_x, map_size_y, tile_info, tiles);
 
 	//load transport tiles
-	std::shared_ptr<Packet> response_transportNodes = _tls.WaitHeader("map.request->transport_nodes");
+	std::shared_ptr<Packet> response_transportNodes = m_tls.WaitHeader("map.request->transport_nodes");
 	{
 		json json = json::parse(response_transportNodes->Content() + 29);
 
@@ -277,11 +290,11 @@ void Player::DownloadScene(const bool& sendPackets)
 		bool stopHere = true;
 	}
 
-	scene->DownloadPlayers(_tls, true);
+	scene->DownloadPlayers(m_tls, true);
 
-	_tls.DeletePacket(response_tileInfo);
-	_tls.DeletePacket(response_tiles);
-	_tls.DeletePacket(response_transportNodes);
+	m_tls.DeletePacket(response_tileInfo);
+	m_tls.DeletePacket(response_tiles);
+	m_tls.DeletePacket(response_transportNodes);
 }
 
-Interface& Player::GetInterface() { return _interface; }
+Interface& Player::GetInterface() { return m_interface; }

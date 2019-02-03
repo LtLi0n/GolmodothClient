@@ -7,13 +7,15 @@ class Menu
 {
 public:
 	Menu(ConsoleEngine& engine);
-	bool MenuActive() const;
 	void Update();
 
+	bool m_logout_request;
+	bool m_menuActive;
+
 private:
-	ConsoleEngine& _engine;
-	std::unique_ptr<Button> _button_resume;
-	std::unique_ptr<Button> _button_exit;
-	bool _menuActive;
+	ConsoleEngine& m_engine;
+	std::unique_ptr<Button> m_button_resume;
+	std::unique_ptr<Button> m_button_logout;
+	std::unique_ptr<Button> m_button_exit;
 };
 

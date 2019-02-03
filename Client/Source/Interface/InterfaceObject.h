@@ -17,6 +17,7 @@ public:
 
 	int width;
 	int height;
+	bool focused;
 
 	std::function<void()> OnClick;
 	std::function<void(ConsoleEngine& engine, InterfaceObject& obj)> OnRender;

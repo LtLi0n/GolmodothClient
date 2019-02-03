@@ -5,12 +5,13 @@
 
 #include "..\Engine\ConsoleEngine.h"
 #include "..\Engine\KeyboardInputManager.h"
+#include "..\Network\TlsClient.h"
 #include "Message.h"
 
 class Chat
 {
 public:
-	Chat(ConsoleEngine& engine);
+	Chat(ConsoleEngine& engine, TlsClient& tls);
 
 	void AddMessage(const Message& message);
 	void Update();
@@ -19,13 +20,14 @@ public:
 	int width;
 	int height;
 
-	bool InputMode() const { return _engine.keyboard.receive_input; }
+	bool InputMode() const;
 	void EnterInputMode();
 	void ExitInputMode(const bool& sendInput);
 
 private:
-	ConsoleEngine& _engine;
-	std::vector<Message> _messages;
-	int _off_i;
+	ConsoleEngine& m_engine;
+	TlsClient& m_tls;
+	std::vector<Message> m_messages;
+	int m_off_i;
 };
 
