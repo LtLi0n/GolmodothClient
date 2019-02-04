@@ -1,4 +1,9 @@
 ﻿#include "Interface/LoginScreen.h" //redefition madness, need to move up
+#include "Engine/ConsoleEngine.h"
+#include "Dependencies/json.hpp"
+#include "Game/Player.h"
+#include "Interface/Button.h"
+
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -7,12 +12,6 @@
 #include <map>
 #include <stdio.h>
 #include <Windows.h>
-
-#include "Engine/ConsoleEngine.h"
-#include "Dependencies/json.hpp"
-
-#include "Game/Player.h"
-#include "Interface/Button.h"
 
 using json = nlohmann::json;
 
@@ -56,7 +55,7 @@ int main()
 {	
 	Game game;
 
-	ConsoleSettings cs(150, 50, 9, 15);
+	ConsoleSettings cs(100, 50, 9, 15);
 
 	if (game.ConstructConsole(cs) == 1) game.Start();
 	else system("pause");

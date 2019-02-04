@@ -115,6 +115,14 @@ int TlsClient::SendRequest(const char* content) const
 	return SSL_write(m_ssl, p.GenerateBuffer(), p.ContentLength() + 5);
 }
 
+int TlsClient::SendRequest(const std::wstring& content) const
+{
+	Packet p(PACKET_REQUEST);
+	std::string str = WidestringToString(content);
+	p.AddContent(str.c_str());
+	return SSL_write(m_ssl, p.GenerateBuffer(), p.ContentLength() + 5);
+}
+
 std::shared_ptr<Packet> TlsClient::WaitHeader(const char* header) const
 {
 	while (true)
@@ -207,5 +215,25 @@ void TlsClient::Listen()
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+}
+
+std::string TlsClient::WidestringToString(std::wstring wstr) const
+{
+	if (wstr.empty()) return std::string();
+
+#if defined WIN32
+	int size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &wstr[0], wstr.size(), NULL, 0, NULL, NULL);
+	std::string ret = std::string(size, 0);
+	WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &wstr[0], wstr.size(), &ret[0], size, NULL, NULL);
+#else
+	size_t size = 0;
+	_locale_t lc = _create_locale(LC_ALL, "en_US.UTF-8");
+	errno_t err = _wcstombs_s_l(&size, NULL, 0, &wstr[0], _TRUNCATE, lc);
+	std::string ret = std::string(size, 0);
+	err = _wcstombs_s_l(&size, &ret[0], size, &wstr[0], _TRUNCATE, lc);
+	_free_locale(lc);
+	ret.resize(size - 1);
+#endif
+	return ret;
 }
 

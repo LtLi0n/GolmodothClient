@@ -11,7 +11,7 @@ using json = nlohmann::json;
 Player::Player(ConsoleEngine& engine, TlsClient& tls) :
 	m_engine(engine),
 	m_tls(tls),
-	m_interface(engine),
+	m_interface(engine, tls),
 	m_loginScreen(engine, tls) { }
 
 void Player::Update()

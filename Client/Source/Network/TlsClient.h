@@ -31,6 +31,7 @@ public:
 	std::map<const unsigned int, std::shared_ptr<Packet>> receivedPackets;
 	int Send(const Packet& packet);
 	int SendRequest(const char* content) const;
+	int SendRequest(const std::wstring& content) const;
 	std::shared_ptr<Packet> WaitHeader(const char* header) const;
 	std::shared_ptr<Packet> GetByHeader(const char* header) const;
 	void DeletePacket(const std::shared_ptr<Packet>& packet);
@@ -47,4 +48,6 @@ private:
 	SSL_CTX* InitCTX(void);
 	void ShowCerts(SSL* ssl);
 	SOCKET OpenConnection(const char *host, int port);
+
+	std::string WidestringToString(std::wstring wstr) const;
 };

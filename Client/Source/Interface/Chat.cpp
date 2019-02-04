@@ -1,7 +1,16 @@
 ﻿#include "Chat.h"
 #include <chrono>
+#include "../Dependencies/json.hpp"
+#include <codecvt>
+
+using json = nlohmann::json;
 
 Chat::Chat(ConsoleEngine& engine, TlsClient& tls) : width(20), height(5), m_engine(engine), m_tls(tls), m_off_i(0) { }
+
+void Chat::SendMessage(const std::wstring& content) const
+{
+	m_tls.SendRequest(L"chat.send_message\n" + content);
+}
 
 void Chat::AddMessage(const Message& message)
 {
@@ -11,6 +20,23 @@ void Chat::AddMessage(const Message& message)
 
 void Chat::Update()
 {
+	std::shared_ptr<Packet> packet = m_tls.GetByHeader("chat.update");
+	if (packet != nullptr)
+	{
+		json json = json::parse(packet->Content() + 11);
+
+		for (int i = 0; i < json.size(); i++)
+		{
+			std::string author_str = json[i]["author"].get<std::string>();
+			std::string content_str = json[i]["content"].get<std::string>();
+			short author_color = json[i]["author_color"].get<short>();
+			time_t time_ticks = json[i]["timestamp"].get<unsigned long long>();
+			AddMessage(Message(ConvertString(author_str), time_ticks, ConvertString(content_str), author_color));
+		}
+
+		m_tls.DeletePacket(packet);
+	}
+
 	width = m_engine.ScreenWidth() - 2;
 
 	if (m_engine.mouseWheelRotation != 0)
@@ -55,7 +81,7 @@ void Chat::Render()
 
 		//render message
 		m_engine.DrawString(1, chat_y + y + offY - 1, time_str, FG_DARK_GREY);
-		m_engine.DrawString(9, chat_y + y + offY - 1, m_messages[off_ii].Author() + L':', FG_RED);
+		m_engine.DrawString(9, chat_y + y + offY - 1, m_messages[off_ii].Author() + L':', m_messages[off_ii].AuthorColor());
 		for (int ln = 0; content.size() > 0; ln++)
 		{
 			wstring output = ln == 0 ? content.substr(0, width - (11 + author_l)) : content.substr(0, width);
@@ -137,11 +163,15 @@ void Chat::ExitInputMode(const bool& sendInput)
 {
 	if (m_engine.keyboard.input.size() > 0 && sendInput)
 	{
-		auto chrono_time = std::chrono::system_clock::now();
-		time_t time = std::chrono::system_clock::to_time_t(chrono_time);
-		AddMessage(Message(L"LtLi0n", time, m_engine.keyboard.input));
+		SendMessage(m_engine.keyboard.input);
 	}
 
 	m_engine.keyboard.input.clear();
 	m_engine.keyboard.receive_input = false;
+}
+
+std::wstring Chat::ConvertString(std::string& content) const
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(content);
 }
